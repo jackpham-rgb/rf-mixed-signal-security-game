@@ -40,9 +40,6 @@ hypothesis is narrower:
 3. derive equilibrium and information-leakage guarantees; and
 4. test whether the game-derived policy outperforms fixed and random baselines.
 
-“First” or “novel” must not appear in a paper abstract until the literature and
-patent review is completed and checked by an advisor.
-
 ## Current results (honest status)
 
 The first confirmatory study has run (simulator 0.3.0, seed 126). The headline question, does a committed
