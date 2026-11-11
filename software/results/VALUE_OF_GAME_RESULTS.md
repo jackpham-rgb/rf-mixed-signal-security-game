@@ -156,6 +156,40 @@ implementations. That agreement is the most trustworthy finding here: the value
 of mixing that cannot be matched by a finer fixed defense appears at roughly 7%
 of regimes, is at most about 0.05 bits per trace, and needs separable bands.
 
+## 6b. Controlled check: this code with the 0.2.0 physics
+
+Section 6 compares two implementations that also use different simulated
+physics, so their agreement is an observation, not a test. To make it a
+controlled test, this code was rerun with the 0.2.0 constants and nothing else
+changed: observer gain (0.75, 1.00, 0.65, 1.18), noise sd (0.85, 1.00, 0.70,
+0.78) and cost (0.01, 0.03, 0.02, 0.08); injected noise totals P instead of 4P;
+D1 injects noise with allocation (0.75, 0.25, 0, 0) at P = 1.5; D3 is hop plus
+(0.5, 0, 0, 0.5) at P = 0.75. The library then has 212 rows, as in 0.2.0. Same
+grid, seed 126, B = 1000. The code is on the `v020-constants` branch.
+
+| Quantity | 0.2.0 original | This code, 0.2.0 physics |
+|---|---|---|
+| Decision-rule points | 28 | 29 |
+| Bonferroni points | 7 | 11 |
+| Bias-corrected points | 37 | 45 |
+| Exact gap_pure > 0.002 / > 0.01 | 48 / 16 | 49 / 16 |
+| Exact gap_robust > 0.01 | 105 | 105 |
+| Fine-library gap_pure > 0.002 / > 0.01 | 29 / 10 | 21 / 9 |
+| Max exact gap_pure, coarse / fine | 0.0508 / 0.0512 | 0.0516 / 0.0514 |
+| Decision-rule points at s = 0.5 / 0.75 / 1 | 4 / 9 / 15 | 6 / 8 / 15 |
+| Representative point: game support | D0, F-x0103, F-x0004, F-x0013 (P0.75) | the same four rows |
+| Representative point: best pure, B3, B4, B4_robust | F-x0103-P0.75, F-x0004-P1.5, D0, F-x0103-P0.75 | identical |
+| Scaffold equilibrium | pure D3 | pure D3 |
+
+The exact-model counts, which do not depend on Monte Carlo noise, match almost
+exactly, and the representative point picks the same rows. The remaining
+differences are in the bootstrap-based counts (common random numbers make the
+intervals tighter here) and in the fine-library count. So the rebuild is
+faithful, and the different numbers in sections 3 to 5 come from the changed
+physics, not from a coding difference. The honest headline is the same under
+both physics: randomizing beats every fixed defense, including a fine menu, in
+roughly 20 to 30 of 400 settings, by at most about 0.05 bits per trace.
+
 ## 7. Estimator diagnostics
 
 - Mean MC minus exact binned MI per dataset ranges from -0.0149 to +0.0060 bits;

@@ -129,7 +129,10 @@ coarse, and some "in between" fixed defense would do just as well. So I built a
 much finer menu of **36,402** fixed defenses and computed the exact answer. Now
 randomizing wins by more than 0.002 bits in only **27 of 400** settings, by at
 most about **0.05 bits per trace**. An earlier, independent version of this code
-got almost the same answer (29 settings, max 0.051), which makes me trust it.
+got almost the same answer (29 settings, max 0.051). As a controlled check I also
+reran this code with that version's physics: it reproduces the original study
+(29 vs 28 significant settings, identical exact-model counts, the same defenses
+picked), so the result does not hinge on one implementation.
 
 ![Where randomizing helps](software/results/figures/fig_B_supp_gap_pure_heatmap.png)
 
