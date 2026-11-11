@@ -282,6 +282,8 @@ report that the strategic model added no value.
 ## 9a. Findings from the value-of-game study (2026-10-30)
 
 The first full numerical study (see
+[`../software/results/archive/v0.2.0/VALUE_OF_GAME_RESULTS.md`](../software/results/archive/v0.2.0/VALUE_OF_GAME_RESULTS.md);
+rerun with the rebuilt code in
 [`../software/results/VALUE_OF_GAME_RESULTS.md`](../software/results/VALUE_OF_GAME_RESULTS.md))
 settled several points and reshaped the theory targets. Record them honestly.
 

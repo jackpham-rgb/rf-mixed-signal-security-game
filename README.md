@@ -46,30 +46,34 @@ an advisor.
 
 ## Current results (honest status)
 
-The first full study has run. The headline question, does a committed randomized
-defense beat the best fixed defense and a non-strategic optimizer against an
-adaptive observer, is **partially supported**, not a clean win.
+The original laptop broke and the simulator code was lost. Version 0.3.0 is a
+rebuild from this documentation (see `docs/RECOVERY_NOTES.md`), and the
+confirmatory study was rerun with it. The headline question, does a committed
+randomized defense beat the best fixed defense and a non-strategic optimizer
+against an adaptive observer, is **partially supported, and smaller than it
+first looks**.
 
-- On a synthetic four-band model, mixing strictly beats both the best fixed
-  defense and the nominal optimizer at 28 of 400 tested regimes (7 after the
-  strict Bonferroni correction), by about 3 to 8 percent of loss.
-- It helps only when the observer's bands are separable, the leakage is
-  non-trivial, overhead is moderately priced, and most observers actually adapt.
-  When bands are inseparable, or in the original scalar model, the best policy is
-  a single fixed defense and the advantage is exactly zero.
-- The large apparent advantage over the non-strategic optimizer mostly comes from
-  that optimizer assuming a naive uniform observer. A mildly robust optimizer
-  recovers the best fixed defense, so the honest advantage is the small 3 to 8
-  percent number, not the larger one.
+- Against the 213-row defender library, mixing beats both comparators at 96 of
+  400 regimes (77 after Bonferroni).
+- Most of that comes from the coarse library missing in-between options. With a
+  36,402-row fine library of fixed defenses, mixing still wins by more than 0.002
+  at only 27 of 400 regimes (7 by more than 0.01), and by at most about 0.05
+  bits-equivalent per trace.
+- That fine-library result agrees closely with the original (lost) code: 29 / 10
+  regimes and a maximum of 0.051. Two independent implementations agreeing is the
+  most trustworthy finding so far.
+- The effect needs separable bands and non-trivial leakage. With identical bands
+  (s = 0), or in the original 4x4 scalar model, the best policy is a single fixed
+  defense and the advantage is exactly zero.
 - Two elementary results are proved: a single effective observer action, or a
   convex loss, each forces a pure optimal defense. The positive value of mixing
-  is a numerical finding checked against exact quadrature and a 36,402-row
-  library, not yet a theorem.
+  is a numerical finding, not a theorem.
 
-Full numbers, confidence intervals, caveats, and five figures are in
+Full numbers, confidence intervals, the comparison with the archived run, and
+five figures are in
 [`software/results/VALUE_OF_GAME_RESULTS.md`](software/results/VALUE_OF_GAME_RESULTS.md).
-The practical next step is to measure band separability on real hardware, since
-that single parameter decides whether the effect exists at all.
+Next steps: a fused/wideband observer type, a general-sum version of the game,
+and measuring band separability on real hardware.
 
 ## Architecture
 
@@ -162,6 +166,9 @@ labeled R0 to R4 so they do not collide with the defender actions D0 to D3:
 - `experiments/simulation-and-bench-plan.md`: measurements and stage gates.
 - `paper/paper-outline.md`: claims, figures, venue strategy, reproducibility.
 - `software/`: executable reference simulator and tests.
+- `paper/related-work-nearest-table.md`: nearest prior work and positioning.
+- `docs/RECOVERY_NOTES.md`: what was restored and what was rebuilt after the
+  laptop loss.
 - `docs/public-tool-roadmap.md`: CLI/API shape, data schema, extension points,
   versioning, and release criteria for the public tool.
 - `CLAUDE.md`: instructions for an AI coding assistant, including writing rules.
