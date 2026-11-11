@@ -181,7 +181,7 @@ Related work: [`paper/related-work-nearest-table.md`](paper/related-work-nearest
 ```bash
 cd software
 python -m pip install -r requirements.txt
-python -m pytest                       # 25 tests, a few seconds
+python -m pytest                       # 38 tests, under a minute
 python examples/tit_for_tat.py         # the impala game
 python -m src.run_experiment --seed 126 --output results/baseline.json
 python -m src.run_sweep --quick        # smoke test, seconds
