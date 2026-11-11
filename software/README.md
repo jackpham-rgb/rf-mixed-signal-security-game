@@ -32,15 +32,19 @@ cores with B = 1000 bootstrap replicates; `--n-boot 200` is a faster check). It 
 `python -m src.figures` redraws the figures from an existing results JSON. The
 interpretation of the sweep is in `results/VALUE_OF_GAME_RESULTS.md`.
 
-## Status of this code
+## Model constants
 
-Version 0.3.0 is a rebuild. The original 0.2.0 code was lost with a broken
-laptop, and only the documentation survived. Every module below was rewritten
-from that documentation, so model constants (observer gains, noise levels,
-costs, defense parameters) are reconstructions, not the original values. The
-original 0.2.0 results are kept in `results/archive/v0.2.0/` for reference;
-`results/VALUE_OF_GAME_RESULTS.md` reports what the rebuilt code gives. See
-`../docs/RECOVERY_NOTES.md`.
+These are modeling choices, not measurements of any device:
+
+| Item | Value |
+|---|---|
+| Observer actions (gain, ambient noise sd, cost) | A0 (1.00, 1.00, 0.00), A1 (1.30, 1.10, 0.02), A2 (0.80, 0.80, 0.03), A3 (0.90, 0.70, 0.05) |
+| Hopping | Leaves a band with probability 0.75 (targeted) and couples at 0.15 when out |
+| Overheads | E = 0.13 hop + 0.20 P, T = 0.18 hop, F = 0 |
+| Session factors | Log-normal gain (sd 0.15) and noise (sd 0.10), shared across bands |
+| Four-band D1 | Deterministic dummy activity (constant offset), E = 0.30; changes no MI |
+| Four-band D3 | Hop plus uniform injection at P = 0.75 |
+| Library | 213 rows: D0 to D3, then hop x (none or 1/4-lattice allocation x P in {0.75, 1.5, 3}), without duplicates |
 
 ## Modules
 

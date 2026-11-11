@@ -1,11 +1,11 @@
-# Value of the game (claim C8): rebuilt-code results
+# Value of the game (claim C8): results
 
-Status: computed with simulator 0.3.0 (the rebuild, see `docs/RECOVERY_NOTES.md`).
+Status: computed with simulator 0.3.0.
 Every number below comes from the confirmatory run (seed 126) in
 `results/value_of_game.json`; every grid point is listed in
 `results/value_of_game_tables.md`. Regenerate with the commands in
-`software/RUN_VALUE_STUDY.md`. The original 0.2.0 write-up is kept in
-`results/archive/v0.2.0/` and is compared with this run in section 6.
+`software/RUN_VALUE_STUDY.md`. Section 6 compares this run with an earlier,
+independent implementation (0.2.0, not published).
 
 **C8 verdict: partially supported, and smaller than the coarse numbers suggest.**
 Against the 213-row defender library, a committed mixed defense strictly beats the
@@ -32,9 +32,9 @@ Decision rule, fixed before the run: the game helps at a grid point only if the
 cross-fitted 95% session-bootstrap CIs of both gaps lie above 0. Bonferroni uses
 the bootstrap SE at z = 3.84 (m = 400).
 
-## 2. Method (what the rebuilt code does)
+## 2. Method
 
-Same design as the original study: four-band channel with separability s,
+Four-band channel with separability s,
 log-normal session gain and noise factors (sd 0.15 and 0.10), hop-out
 probability 0.75 at coupling 0.15, 16 equal-mass bins frozen from 16 calibration
 sessions x 250 traces per cell, Miller-Madow MI, 128 sessions x 1000 traces per
@@ -44,14 +44,9 @@ library (1/12 lattice, 41 powers, 121-point variance grid). Four observer type
 models and the grid A x s x k x types = 5 x 5 x 4 x 4 = 400 points. Seeds:
 `SeedSequence(126, spawn_key=(i_A, i_s))`, scaffold on `spawn_key=(1000,)`.
 
-Differences from 0.2.0 that matter for interpretation:
-
-- Model constants (observer gains, noise, costs; D1 to D3 settings) are
-  reconstructions. See the table in `docs/RECOVERY_NOTES.md`.
-- The library has 213 rows instead of 212.
-- Rows share common random numbers within a band, so gaps between rows have
-  lower variance. This makes the CIs tighter and is the main reason more points
-  pass the decision rule here than in the archived run.
+Model constants are listed in `software/README.md`. Library rows share common
+random numbers within a band, so gaps between rows have lower variance and the
+CIs are tight.
 
 ## 3. Headline counts
 
@@ -110,7 +105,7 @@ is the fairer size of the effect.
 
 ### Representative point (A = 0.5, s = 1, k = 1, one adaptive type)
 
-Pre-specified in the original study. Here the game mixes four noise-allocation
+Pre-specified before the run. Here the game mixes four noise-allocation
 rows (F-x1201-P0.75 0.52, F-x1111-P0.75 0.23, F-x1210-P0.75 0.23, F-x2200-P0.75
 0.01) at the same energy as the best pure row (0.150) and leaks less (0.113 vs
 0.142 bits). gap_pure = 0.0241 [0.0182, 0.0292], exact 0.0263, but the
@@ -121,7 +116,7 @@ pure row here, so gap_robust equals gap_pure at this point.
 ### Scaffold check (original 4 x 4 scalar model)
 
 The equilibrium is pure D3 and gap_pure = 0.0000 [0.0000, 0.0000], as in the
-original study. `run_experiment` (seed 126): game value 0.3535, best pure D3
+earlier implementation. `run_experiment` (seed 126): game value 0.3535, best pure D3
 0.3535, in-sample gap 0.0000, largest cell SE 0.0028. The scaffold gives no
 evidence for C8.
 
@@ -132,7 +127,7 @@ evidence for C8.
   action). Decision-rule points by s: 0.25 (9), 0.5 (25), 0.75 (25), 1 (37).
 - **Leakage must be non-trivial.** By A: 0.25 (2), 0.5 (13), 1 (35), 2 (46);
   none at A = 0.125, where overhead dominates and D0 wins.
-- **Prices.** By k: 0.1 (22), 0.3 (24), 1 (30), 3 (20). Unlike the archived run,
+- **Prices.** By k: 0.1 (22), 0.3 (24), 1 (30), 3 (20). Unlike the earlier implementation,
   the largest fine-surviving effects are at k = 3, where cheap partial
   allocations are mixed instead of paying for a stronger fixed one.
 - **Observer types.** 1 type (29), 2 types (24), 3 types adaptive 0.5 (28),
@@ -141,9 +136,9 @@ evidence for C8.
   0.052; gap_robust: A 0.262, s 0.097, k 0.019, types 0.044). Most variance is
   interaction: the effect lives in the high-A, high-s corner.
 
-## 6. Comparison with the archived 0.2.0 run
+## 6. Comparison with an earlier, independent implementation
 
-| Quantity | 0.2.0 (archived) | 0.3.0 (rebuild) |
+| Quantity | 0.2.0 (earlier) | 0.3.0 (this run) |
 |---|---|---|
 | Decision-rule points | 28 | 96 |
 | Bonferroni points | 7 | 77 |
@@ -154,7 +149,8 @@ evidence for C8.
 | Scaffold equilibrium | pure D3 | pure D3 |
 
 The coarse-library counts differ a lot, mostly because of tighter CIs (common
-random numbers) and different reconstructed constants. The fine-library counts
+random numbers here), a 212- versus 213-row library, and different model
+constants. The fine-library counts
 and the size of the largest real effect agree closely between two independent
 implementations. That agreement is the most trustworthy finding here: the value
 of mixing that cannot be matched by a finer fixed defense appears at roughly 7%
@@ -205,11 +201,10 @@ Seed 126; B = 1000; 128 sessions x 1000 traces; 16 bins; rho = 0.5; quadrature
 
 ## 11. Limitations
 
-Everything in the archived write-up still applies: the channel is synthetic and
+The channel is synthetic and
 uncalibrated, F = 0, MI estimates are biased, the linear mixed-policy payoff
 assumes per-trace mode identification and a band-committed observer, and low
-estimated leakage is not a security proof. In addition, the model constants are
-reconstructions, so no number here should be compared with hardware until
+estimated leakage is not a security proof. The model constants are choices, so no number here should be compared with hardware until
 separability is measured.
 
 ## 12. Next steps

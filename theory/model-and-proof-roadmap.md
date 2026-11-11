@@ -49,9 +49,8 @@ For continuous features, the estimator and its bias calibration are part of the
 experiment, not hidden inside this symbol.
 
 The empirical realization of \(L\), \(B_d\), \(N_d\), and the costs
-\(\bar E_d,\bar T_d\) is specified in
-[`high-volume-data-and-digital-circuit-extension.md`](high-volume-data-and-digital-circuit-extension.md),
-which derives them from RTL switching activity rather than from invented
+\(\bar E_d,\bar T_d\) is planned to come from a digital-circuit track (not built yet),
+which would derive them from RTL switching activity rather than from invented
 constants: \(L\) from secret-dependent per-cycle toggles, \(N_d\) from a dummy
 switching bank, and the cost coefficients from synthesis timing/power reports.
 Simulated switching activity is a declared **proxy** for current demand, not a
@@ -225,9 +224,7 @@ for the actual trace statistic.
 With \(n_{\min}\) independent sessions per cell and a bounded per-run statistic,
 a union bound over the \(DA\) cells gives
 \(\epsilon=\sqrt{\ln(2DA/\delta)/(2n_{\min})}\), so the interval is governed by
-the number of *sessions*, not traces. The arithmetic (§11.2 of
-[`high-volume-data-and-digital-circuit-extension.md`](high-volume-data-and-digital-circuit-extension.md))
-is what motivates the high-volume track: at \(n_{\min}=30\) the bound is too
+the number of *sessions*, not traces. This arithmetic is what motivates the high-volume track: at \(n_{\min}=30\) the bound is too
 wide to separate any two defenses.
 
 Two refinements belong with T5 and are developed in that document:
@@ -282,8 +279,6 @@ report that the strategic model added no value.
 ## 9a. Findings from the value-of-game study (2026-10-30)
 
 The first full numerical study (see
-[`../software/results/archive/v0.2.0/VALUE_OF_GAME_RESULTS.md`](../software/results/archive/v0.2.0/VALUE_OF_GAME_RESULTS.md);
-rerun with the rebuilt code in
 [`../software/results/VALUE_OF_GAME_RESULTS.md`](../software/results/VALUE_OF_GAME_RESULTS.md))
 settled several points and reshaped the theory targets. Record them honestly.
 

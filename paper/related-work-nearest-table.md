@@ -1,9 +1,7 @@
 # Related work: nearest-work table
 
-Draft for Section 2 of `paper/paper-outline.md`. Sources:
-`literature/novelty-search-log.md`, sections "Deep search 2026-10-30" (54
-recorded web queries in one session, plus the citation chaining listed there)
-and "Deep search 2 (2026-10-30)" (27 more queries; full-text reads of Yao and
+Sources: two literature searches on 2026-10-30 (54 recorded web queries in
+one session plus citation chaining, then 27 more queries; full-text reads of Yao and
 Zhang 2024, EMMasker, and the Xu and Baykal-Gürsoy manuscripts; Semantic
 Scholar forward chaining of nine seeds). This is a positioning aid, not a
 novelty finding. "No direct match found" means only that the recorded queries

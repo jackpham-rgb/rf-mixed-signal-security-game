@@ -65,5 +65,5 @@ python -m src.figures --results results/value_of_game.json --figures results/fig
 ```
 
 Note: `results/` is gitignored except for `VALUE_OF_GAME_RESULTS.md`,
-`value_of_game_tables.md`, the PNG figures, and `archive/`. The large JSON stays
+`value_of_game_tables.md`, and the PNG figures. The large JSON stays
 local; regenerate it with the command above.

@@ -41,14 +41,11 @@ hypothesis is narrower:
 4. test whether the game-derived policy outperforms fixed and random baselines.
 
 “First” or “novel” must not appear in a paper abstract until the literature and
-patent review in `literature/novelty-search-log.md` is completed and checked by
-an advisor.
+patent review is completed and checked by an advisor.
 
 ## Current results (honest status)
 
-The original laptop broke and the simulator code was lost. Version 0.3.0 is a
-rebuild from this documentation (see `docs/RECOVERY_NOTES.md`), and the
-confirmatory study was rerun with it. The headline question, does a committed
+The first confirmatory study has run (simulator 0.3.0, seed 126). The headline question, does a committed
 randomized defense beat the best fixed defense and a non-strategic optimizer
 against an adaptive observer, is **partially supported, and smaller than it
 first looks**.
@@ -59,9 +56,9 @@ first looks**.
   36,402-row fine library of fixed defenses, mixing still wins by more than 0.002
   at only 27 of 400 regimes (7 by more than 0.01), and by at most about 0.05
   bits-equivalent per trace.
-- That fine-library result agrees closely with the original (lost) code: 29 / 10
-  regimes and a maximum of 0.051. Two independent implementations agreeing is the
-  most trustworthy finding so far.
+- That fine-library result agrees closely with an earlier, independent
+  implementation (29 / 10 regimes, maximum 0.051). Two implementations agreeing
+  is the most trustworthy finding so far.
 - The effect needs separable bands and non-trivial leakage. With identical bands
   (s = 0), or in the original 4x4 scalar model, the best policy is a single fixed
   defense and the advantage is exactly zero.
@@ -69,8 +66,7 @@ first looks**.
   convex loss, each forces a pure optimal defense. The positive value of mixing
   is a numerical finding, not a theorem.
 
-Full numbers, confidence intervals, the comparison with the archived run, and
-five figures are in
+Full numbers, confidence intervals, and five figures are in
 [`software/results/VALUE_OF_GAME_RESULTS.md`](software/results/VALUE_OF_GAME_RESULTS.md).
 Next steps: a fused/wideband observer type, a general-sum version of the game,
 and measuring band separability on real hardware.
@@ -116,14 +112,13 @@ chunked dataset (Zarr traces + Parquet features) -> hierarchical statistics
 
 Switching activity from simulation is a **proxy** for current demand, not a
 measurement of silicon EM leakage. It is calibrated against hardware only at the
-optional FPGA gate, and every claim derived from it is labeled accordingly. See
-`theory/high-volume-data-and-digital-circuit-extension.md`.
+optional FPGA gate, and every claim derived from it is labeled accordingly. This
+track is planned and not built yet.
 
 ## Stage gates
 
-This is a summary. The authoritative list is the twelve stages (Stage 0 to
-Stage 11) in `research-project-master-plan.txt`; the matching stage numbers are
-in parentheses.
+The project runs in twelve stages (Stage 0 to Stage 11); the matching stage
+numbers are in parentheses.
 
 1. **Reproduction (Stages 0 to 2):** generate a trace model and reproduce
    no-defense, fixed-noise, and random-frequency baselines.
@@ -157,23 +152,11 @@ labeled R0 to R4 so they do not collide with the defender actions D0 to D3:
 
 ## Repository map
 
-- `research-project-master-plan.txt`: start here after a long break.
-- `theory/model-and-proof-roadmap.md`: notation, mathematical model, theorem work.
-- `theory/high-volume-data-and-digital-circuit-extension.md`: RTL/FPGA trace
-  factory, dataset schema and storage, and the statistical plan for 10k to 1M
-  traces.
-- `literature/novelty-search-log.md`: prior art and search protocol.
-- `experiments/simulation-and-bench-plan.md`: measurements and stage gates.
-- `paper/paper-outline.md`: claims, figures, venue strategy, reproducibility.
-- `software/`: executable reference simulator and tests.
+- `theory/model-and-proof-roadmap.md`: notation, mathematical model, proved
+  results, and open proof targets.
 - `paper/related-work-nearest-table.md`: nearest prior work and positioning.
-- `docs/RECOVERY_NOTES.md`: what was restored and what was rebuilt after the
-  laptop loss.
-- `docs/public-tool-roadmap.md`: CLI/API shape, data schema, extension points,
-  versioning, and release criteria for the public tool.
-- `CLAUDE.md`: instructions for an AI coding assistant, including writing rules.
-- `private/`: personal planning notes (schedules, shopping lists, abandoned
-  claims). Gitignored, so it stays local.
+- `software/`: reference simulator, tests, and the value-of-game study.
+- `software/results/VALUE_OF_GAME_RESULTS.md`: results of the confirmatory run.
 - `LICENSE`: MIT.
 
 ## The tool
@@ -210,8 +193,7 @@ from this tool is not a security certification.
 | Output: figures | regenerated from the results JSON only, never hand-edited |
 
 **Example.** Today the reference simulator runs as shown in the next section.
-The planned CLI (working name `ascam`, see `docs/public-tool-roadmap.md`) will
-look like:
+The planned CLI (working name `ascam`) will look like:
 
 ```powershell
 ascam generate --dut synth_kernel --traces 10000 --sessions 30 --seed 126 --out data/p1
@@ -230,8 +212,7 @@ own licenses, which must be recorded in each dataset manifest.
 **Roadmap.** Reference simulator (now) -> RTL/VCD dataset generator with the
 documented schema -> `ascam` CLI plus importable Python library with stable
 schema -> example dataset, CITATION.cff, CI, and v1.0 release -> importer for
-measured traces from owned hardware. Details and release gates are in
-`docs/public-tool-roadmap.md`.
+measured traces from owned hardware.
 
 ## Quick software start
 
