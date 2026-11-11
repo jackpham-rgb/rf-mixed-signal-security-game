@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: software
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Run tests
+        run: python -m pytest
+      - name: Smoke-test the sweep
+        run: python -m src.run_sweep --quick --workers 2 --output results/quick/value_of_game.json --figures results/quick/figures --tables results/quick/tables.md
+
+  no-em-dashes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail on em dashes
+        run: |
+          if grep -rInP "\x{2014}" --include='*.md' --include='*.py' --include='*.yml' --include='*.cff' .; then
+            echo "Replace the em dashes above with a comma, colon, or period."
+            exit 1
+          fi
