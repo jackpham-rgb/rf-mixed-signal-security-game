@@ -1,0 +1,11 @@
+{
+  "seed": 126,
+  "bootstrap": 1000,
+  "bins": 16,
+  "lambda_energy": 0.3,
+  "lambda_latency": 0.2,
+  "lambda_false_alarm": 0.0,
+  "type_model": 0,
+  "robust_rho": 0.5,
+  "label": "label_hw"
+}
