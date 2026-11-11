@@ -121,7 +121,7 @@ def sheet_mcu(d):
     d += elm.Dot(open=True).label("DRV1: clock band", loc="right")
     d += elm.Line().at(g1.in1).left(0.25)
     d += elm.Line().up(0.45)
-    d += elm.Dot(open=True).label("EN_CLK", loc="left", fontsize=9)
+    d += elm.Dot(open=True).label("EN1", loc="left", fontsize=9)
     d += elm.Line().at(mco.center).down(2.6)
     tap = d.add(elm.Dot())
     d += elm.Line().right(1.6)
@@ -178,8 +178,8 @@ def sheet_branches(d):
     d += elm.Label().at((-3, -4.2)).label(
         "Branch values (b: target band, carrier, R_LOAD, R_COMP)\n"
         "0: B0 conducted-low, 250 kHz with slow edges, 100 Ω, no R_COMP\n"
-        "1: B1 clock band, gated MCO 24 / 32 MHz, 150 Ω, 300 Ω\n"
-        "2: B2 harmonic band, XOR doubler 48 / 64 MHz, 150 Ω, 300 Ω\n"
+        "1: B1 clock band, gated MCO 24 / 32 MHz, 150 Ω, 301 Ω\n"
+        "2: B2 harmonic band, XOR doubler 48 / 64 MHz, 150 Ω, 301 Ω\n"
         "3: B3 high-pass band, 6 MHz timer PWM, 100 Ω, 200 Ω\n\n"
         "Rev 2 fix: R_COMP draws the same average current as R_LOAD when ENb is off,\n"
         "so random gating does not step the supply current (s rises from 0.17 to 0.78 in SPICE).",

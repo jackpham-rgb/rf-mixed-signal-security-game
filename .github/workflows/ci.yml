@@ -36,13 +36,17 @@ jobs:
       - name: Install ngspice and Python packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends ngspice
+          sudo apt-get install -y --no-install-recommends ngspice kicad-symbols kicad-footprints
           python -m pip install -r hardware/requirements.txt
       - name: Simulate the board and redraw the hardware figures
         run: |
           python hardware/scripts/run_spice.py
           python hardware/scripts/draw_schematic.py
           python hardware/scripts/board_3d.py
+      - name: Regenerate and check the KiCad netlist and BOM
+        run: |
+          python hardware/kicad/make_netlist.py
+          git diff --exit-code hardware/kicad/ascam1.net hardware/kicad/NETLIST.md hardware/bom.csv
 
   no-em-dashes:
     runs-on: ubuntu-latest

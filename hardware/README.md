@@ -1,8 +1,9 @@
 # ASCAM-1: a test board for measuring band separability
 
 Status: **design and simulation only.** Nothing has been built yet. The schematic,
-SPICE model, parts list, and 3D model are a feasible first design. KiCad capture,
-layout review, and fabrication are the next steps.
+SPICE model, parts list, 3D model, and a pin-checked KiCad netlist are a feasible
+first design. PCB layout in KiCad, review, and fabrication are the next steps (see
+[`kicad/README.md`](kicad/README.md)).
 
 ![How the board and the game work](figures/how_it_works.gif)
 
@@ -112,7 +113,7 @@ USB-powered, emits only through its own SMA ports, and has no intentional radiat
 
 ## Feasibility
 
-- **Cost:** about 23 USD in parts per board (`bom.csv`) plus about 10 to 30 USD for
+- **Cost:** about 23 USD in parts per board (`bom.csv`, 64 parts) plus about 10 to 30 USD for
   five 4-layer boards at common PCB fabs.
 - **Assembly:** all parts are standard SMD (smallest 0402 and UFQFPN-48). Hand
   assembly with a stencil and hot plate is realistic; fab assembly is easier.
@@ -133,7 +134,10 @@ USB-powered, emits only through its own SMA ports, and has no intentional radiat
 | `scripts/board_3d.py` | 3D concept model, top view, rotating GIF, STL export |
 | `cad/ascam1_board.stl` | 3D model for any STL viewer (mm) |
 | `scripts/how_it_works_gif.py` | The explainer animation at the top (stylized, not data) |
-| `bom.csv` | Parts list with packages and rough prices |
+| `kicad/ascam1.net` | KiCad netlist (64 parts, 40 nets), import into the PCB editor |
+| `kicad/make_netlist.py` | Generates the netlist, `kicad/NETLIST.md`, and `bom.csv` from one parts table, checking every pin against the official KiCad libraries |
+| `kicad/README.md` | Step-by-step KiCad 10 guide: import, stackup, placement, layout rules |
+| `bom.csv` | Parts list with footprints and rough prices (generated) |
 
 Regenerate everything (needs ngspice on PATH plus `pip install -r hardware/requirements.txt`):
 

@@ -1,27 +1,34 @@
-ref,qty,part,package,value / notes,approx unit cost (USD)
-U2,1,STM32G431CBU6,UFQFPN-48,"Cortex-M4 170 MHz; PLL lets firmware hop the clock (24 / 32 MHz); MCO output on PA8",5.50
-U1,1,AP2112K-3.3TRG1,SOT-23-5,"3.3 V LDO, 600 mA",0.40
-Y1,1,8 MHz crystal,3225,"HSE reference for the PLL",0.30
-C10-C11,2,capacitor,0402 C0G,"10 pF crystal load caps (check crystal datasheet)",0.02
-R_SH,1,current-sense resistor,1206,"1 ohm 0.1% thin film (e.g. Susumu RG3216 series), Kelvin pads",0.60
-C1,1,capacitor,0603 X7R,1 uF LDO input,0.02
-C2,1,capacitor,0805 X7R,10 uF LDO output,0.05
-C3,1,capacitor,0402 X7R,100 nF AC coupling to J1,0.02
-C4-C7,4,capacitor,0402 X7R,"100 nF, one per VDD pin",0.02
-C8,1,capacitor,0603 X7R,4.7 uF bulk at MCU,0.03
-C9,1,capacitor,0402 C0G,3.3 pF delay cap for the XOR doubler,0.02
-U3 + branch gates,5,74LVC1G08,SOT-353,"AND: clock gate for branch 1, and DRV AND EN in each branch",0.15
-U4,1,74LVC1G86,SOT-353,XOR frequency doubler for branch 2,0.15
-branch inverters,3,74LVC1G04,SOT-353,"NOT(EN) drives the complementary load in branches 1-3",0.12
-Q1-Q7,7,DMG2302U,SOT-23,"N-MOSFET, low gate charge; 4 main + 3 complementary",0.10
-R_LOAD0 R_LOAD3,2,resistor,1206 0.25 W,100 ohm,0.02
-R_LOAD1 R_LOAD2,2,resistor,1206 0.25 W,150 ohm,0.02
-R_COMP1 R_COMP2,2,resistor,1206 0.25 W,301 ohm,0.02
-R_COMP3,1,resistor,1206 0.25 W,200 ohm,0.02
-R7,1,resistor,0402,49.9 ohm trigger series termination,0.01
-R8,1,resistor,0402,100 ohm XOR doubler delay,0.01
-R9-R10,2,resistor,0402,"5.1 k USB-C CC pull-downs (5 V sink)",0.01
-J1-J3,3,SMA edge-launch jack,edge mount 1.6 mm,"J1 conducted, J2 trigger, J3 EM loop",3.00
-J5,1,USB-C receptacle (power only),GCT USB4105,"5 V input",0.70
-J4,1,Tag-Connect TC2030 footprint,pads only,"SWD programming, no part to buy",0.00
-PCB,1,4-layer PCB,70 x 45 mm 1.6 mm,"layer 2 solid ground; about 10-30 USD for 5 boards at common fabs",4.00
+refs,qty,value,footprint,part number,notes,approx unit USD
+C1,1,1u,C_0603_1608Metric,,LDO input,0.02
+C10 C11,2,10p,C_0402_1005Metric,,"crystal load, check crystal datasheet",0.02
+C2,1,10u,C_0805_2012Metric,,LDO output,0.02
+C3 C4 C5 C6 C7 C12 C13 C14 C15 C16 C17 C18 C19 C20,14,100n,C_0402_1005Metric,,AC coupling to J1; U10 decoupling; U3 decoupling; U4 decoupling; U5 decoupling; U6 decoupling; U7 decoupling; U8 decoupl,0.02
+C8,1,4.7u,C_0603_1608Metric,,MCU bulk,0.02
+C9,1,3.3p,C_0402_1005Metric,,"doubler delay, C0G",0.02
+H1 H2 H3 H4,4,M3,MountingHole_3.2mm_M3,,mounting hole,0.00
+J1,1,SMA conducted,SMA_Amphenol_132289_EdgeMount,Amphenol 132289,conducted band B0,3.00
+J2,1,SMA trigger,SMA_Amphenol_132289_EdgeMount,Amphenol 132289,,3.00
+J3,1,SMA EM loop,SMA_Amphenol_132289_EdgeMount,Amphenol 132289,EM bands B1 B2 B3,3.00
+J4,1,SWD,Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical,,"pads only, no part to buy",0.00
+J5,1,USB-C power,USB_C_Receptacle_GCT_USB4125-xx-x_6P_TopMnt_Horizontal,GCT USB4125-GF-A,"5 V sink, power only",0.60
+Q1 Q2 Q3 Q4 Q5 Q6 Q7,7,DMG2302U,SOT-23,,branch 0 main switch; branch 1 complementary switch; branch 1 main switch; branch 2 complementary switch; branch 2 main ,0.10
+R1,1,1R 0.1%,R_1206_3216Metric,,"R_SH current shunt, Kelvin pads",0.60
+R11,1,10k,R_0402_1005Metric,,boot from flash,0.02
+R12 R15,2,100,R_1206_3216Metric,,"branch 0 R_LOAD, 0.25 W; branch 3 R_LOAD, 0.25 W",0.02
+R13 R14,2,150,R_1206_3216Metric,,"branch 1 R_LOAD, 0.25 W; branch 2 R_LOAD, 0.25 W",0.02
+R16 R17,2,301,R_1206_3216Metric,,"branch 1 R_COMP, 0.25 W; branch 2 R_COMP, 0.25 W",0.02
+R18,1,200,R_1206_3216Metric,,"branch 3 R_COMP, 0.25 W",0.02
+R7,1,49.9,R_0402_1005Metric,,trigger series termination,0.02
+R8,1,100,R_0402_1005Metric,,doubler delay,0.02
+R9 R10,2,5.1k,R_0402_1005Metric,,USB-C CC pull-down,0.02
+TP1,1,LOOP_START,TestPoint_Pad_D1.0mm,,draw the 5 mm loop trace from TP1 around U2 to TP2,0.00
+TP2,1,LOOP_END,TestPoint_Pad_D1.0mm,,loop return to ground,0.00
+TP3,1,SHUNT_HI,TestPoint_Pad_D1.0mm,,"Kelvin sense, shunt high",0.00
+TP4,1,SHUNT_LO,TestPoint_Pad_D1.0mm,,"Kelvin sense, shunt low",0.00
+U1,1,AP2112K-3.3,SOT-23-5,AP2112K-3.3TRG1,3.3 V LDO,0.40
+U2,1,STM32G431CBU6,QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm,STM32G431CBU6,"PA6 = TIM3_CH1, PB0 = TIM3_CH3, PA8 = MCO, PG10 = NRST, PB8 = BOOT0",5.50
+U4,1,74LVC1G86,SOT-353_SC-70-5,,XOR doubler,0.15
+U3 U5 U6 U7,4,74LVC1G08,SOT-353_SC-70-5,,branch 0 (B0 conducted): carrier AND random enable; branch 1 (B1 clock): carrier AND random enable; branch 2 (B2 harmoni,0.15
+U8 U9 U10,3,74LVC1G04,SOT-353_SC-70-5,,branch 1: NOT(enable) for the complementary load; branch 2: NOT(enable) for the complementary load; branch 3: NOT(enable,0.12
+Y1,1,8 MHz,Crystal_SMD_3225-4Pin_3.2x2.5mm,,"HSE, PLL reference",0.30
+PCB,1,4-layer PCB,"70 x 45 mm, 1.6 mm",,layer 2 solid ground; about 10-30 USD for 5 boards,4.00
