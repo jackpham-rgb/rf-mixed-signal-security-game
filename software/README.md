@@ -117,6 +117,13 @@ These are modeling choices, not measurements of any device:
   observer B5 that best-responds to whatever policy is deployed.
 - `src/value_of_game.py`: per-session simulation, cross-fitted policy
   evaluation, session bootstrap, and exact-model validation of the gaps.
+- `src/extensions.py`: the fused ("hears everything") observer, which sums
+  per-band log-likelihood ratios over all four bands of the same trace, and the
+  general-sum game (defender loss MI + overhead, observer utility MI - own cost)
+  solved as a strong Stackelberg commitment with one LP per response profile.
+- `src/run_extensions.py`: the extension study (`python -m src.run_extensions`),
+  writing `results/extensions.json`, `results/extensions_tables.md`, and
+  figures E1 and E2. `--quick` is a seconds-long smoke test.
 - `src/run_sweep.py`: command-line sweep over leakage-to-noise ratio,
   separability, prices, and observer types.
 - `src/tables.py`: machine-generated markdown tables from the results JSON.
