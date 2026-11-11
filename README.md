@@ -1,249 +1,200 @@
-# Adaptive Spectral Camouflage for Mixed-Signal Side Channels
+# Game Theory in a Circuit: Can a Chip Hide Its Noise by Playing Smart?
 
-This project studies a defensive question:
+## Why I did this
 
-> Can an embedded device adapt its clocking and dummy-current activity so that an
-> RF/power observer learns less, while the device still meets energy and latency
-> limits?
+It started with all the AI and ML buzz at my co-op. During downtime I hung out
+with the AI/ML team, watched intro AI lectures, and kept wondering where game
+theory could fit into electrical engineering. My first guess was circuits, like
+electrons "choosing" paths through wires, but I wanted a corner fewer people had
+looked at, so I ended up in signals and side channels.
 
-The proposed system treats defense and observation as a Bayesian Stackelberg
-game. The defender commits to a randomized mixed-signal policy. An adaptive
-observer then chooses a measurement band, trace budget, and signal-processing
-strategy. The central output is not merely an implementation: it is a formal
-model, equilibrium analysis, leakage bounds, reproducible simulation, and
-controlled validation on hardware owned by the researcher.
+## Game theory in a nutshell
 
-## Why this project
+Game theory is the math of decisions when your best move depends on what someone
+else does. You write down who the players are, what each can do, and what each
+gets, then look for the moves that nobody wants to change.
 
-It deliberately joins four areas:
+## The impala story
 
-- RF measurement: spectrum selection, near-field EM capture, filtering, SNR.
-- Mixed-signal design: clock/frequency modes, switching current, PDN coupling,
-  dummy loads, power and timing overhead.
-- Probability and optimization: Bayesian inference, mutual information,
-  hypothesis testing, convex programs, robust optimization.
-- Hardware security: measurement-driven leakage assessment and defensive
-  countermeasures.
+<img src="assets/impala-pixel.png" alt="Pixel-art impala with a red tick on its back" width="340">
 
-The practical example is an owned BLE/IoT sensor or access-control prototype.
-No experiment targets a third-party device, network, or deployed product.
+*Original pixel art made for this repo (free to reuse). Yes, the red pixel is the tick.*
 
-## Contribution hypothesis, not a novelty claim
+My favorite example comes from Veritasium's
+[What Game Theory Reveals About Life, The Universe, and Everything](https://www.youtube.com/watch?v=mScpHTIi-kM).
+Impalas groom each other to get rid of ticks, which they can't reach on their own
+necks. But grooming isn't free. It costs time, energy, and saliva, and in the
+African heat water is scarce. So every impala faces a choice: groom your
+neighbor, or just enjoy being groomed.
 
-Random clocks, voltage/frequency variation, dummy activity, noise injection,
-EM masking, and game-theoretic timing defenses already exist. The research
-hypothesis is narrower:
+Turn that into points and you get the classic **prisoner's dilemma**:
 
-1. jointly choose a stochastic spectral/power defense under explicit energy,
-   latency, and false-alarm costs;
-2. model an adaptive physical observer rather than a fixed classifier;
-3. derive equilibrium and information-leakage guarantees; and
-4. test whether the game-derived policy outperforms fixed and random baselines.
+| | Neighbor grooms | Neighbor refuses |
+|---|---|---|
+| **I groom** | 3, 3 | 0, 5 |
+| **I refuse** | 5, 0 | 1, 1 |
 
-## Current results (honest status)
+If both groom, each gets 3. If both refuse, each gets 1. If I refuse while my
+neighbor grooms me, I get 5 and they get 0. Whatever the neighbor does,
+refusing pays more for me, yet if both of us think that way we both end up worse
+off (1 each instead of 3).
 
-The first confirmatory study has run (simulator 0.3.0, seed 126). The headline question, does a committed
-randomized defense beat the best fixed defense and a non-strategic optimizer
-against an adaptive observer, is **partially supported, and smaller than it
-first looks**.
+The political scientist **Robert Axelrod** asked what happens when the game is
+played over and over. He ran a computer tournament of strategies, and the winner
+was one of the simplest: **Tit for Tat**. Start nice, then copy whatever the
+other player did last round.
 
-- Against the 213-row defender library, mixing beats both comparators at 96 of
-  400 regimes (77 after Bonferroni).
-- Most of that comes from the coarse library missing in-between options. With a
-  36,402-row fine library of fixed defenses, mixing still wins by more than 0.002
-  at only 27 of 400 regimes (7 by more than 0.01), and by at most about 0.05
-  bits-equivalent per trace.
-- That fine-library result agrees closely with an earlier, independent
-  implementation (29 / 10 regimes, maximum 0.051). Two implementations agreeing
-  is the most trustworthy finding so far.
-- The effect needs separable bands and non-trivial leakage. With identical bands
-  (s = 0), or in the original 4x4 scalar model, the best policy is a single fixed
-  defense and the advantage is exactly zero.
-- Two elementary results are proved: a single effective observer action, or a
-  convex loss, each forces a pure optimal defense. The positive value of mixing
-  is a numerical finding, not a theorem.
+```python
+C, D = "groom", "refuse"
+PAYOFF = {(C, C): (3, 3), (D, D): (1, 1), (D, C): (5, 0), (C, D): (0, 5)}
 
-Full numbers, confidence intervals, and five figures are in
+def tit_for_tat(my_moves, their_moves):
+    return their_moves[-1] if their_moves else C   # start nice, then copy
+
+def always_refuse(my_moves, their_moves):
+    return D
+
+def play(a, b, rounds=10):
+    ma, mb, sa, sb = [], [], 0, 0
+    for _ in range(rounds):
+        x, y = a(ma, mb), b(mb, ma)
+        pa, pb = PAYOFF[(x, y)]
+        ma.append(x); mb.append(y); sa += pa; sb += pb
+    return sa, sb
+
+print(play(tit_for_tat, tit_for_tat))     # (30, 30): two nice players thrive
+print(play(tit_for_tat, always_refuse))   # (9, 14): gets burned once, then stops
+```
+
+The full version is in [`software/examples/tit_for_tat.py`](software/examples/tit_for_tat.py).
+
+## So how does this connect to EECS and signals?
+
+Every chip leaks a little. When it computes, its power draw and RF emissions
+change slightly depending on the data, including secret data like a key. Someone
+with a probe or an antenna can listen to that noise. This is called a **side
+channel**.
+
+That is a game with two players:
+
+- **The device (defender)** can shuffle its clock frequency (hopping) and add
+  dummy noise in different frequency bands. Each trick costs energy and time.
+- **The listener (observer)** picks which frequency band to listen to, and it
+  adapts: it picks the band that leaks the most against whatever the device does.
+
+The score is how much the listener learns, measured in bits per trace (mutual
+information), plus the energy and time the device spends. Unlike the impalas,
+this game is closer to rock-paper-scissors: if the device always does the same
+thing, the listener learns where to listen. So the real question is whether
+**randomizing** the defense beats picking one fixed defense.
+
+## What I set out to do
+
+My question: *can a device shuffle its clock and dummy power draw so that a
+smart listener learns less, without burning too much energy?*
+
+I tried to answer it in simulation first, before buying any hardware:
+
+1. Build a simulator where a device leaks a synthetic secret bit into four
+   frequency bands, with a knob `s` for how differently the defenses affect each
+   band (0 = every band reacts the same, 1 = fully band-specific).
+2. Let an adaptive listener pick the best band against each defense.
+3. Solve for the best randomized defense with linear programming, and compare it
+   with the best single fixed defense and with simpler optimizers.
+4. Check every number fairly: fit on half the data and score on the other half,
+   bootstrap the uncertainty, and compare against exact math.
+
+All secrets are synthetic and nothing here touches real or third-party devices.
+
+## What we did and what we found
+
+**Step 1: a tiny 4 x 4 version.** Four defenses (none, fixed dummy load, random
+frequency, both) against four listening bands. Result: the best plan is one fixed
+defense ("both"). Randomizing adds exactly nothing here.
+
+**Step 2: a richer four-band model.** 213 possible defenses (hop or not, and how
+to spread the dummy noise over the bands at three power levels), tested across
+400 settings of leakage strength, the band knob `s`, energy price, and listener
+types. Each setting uses 128 sessions of 1,000 traces per cell.
+
+**Step 3: score it fairly.** A strategy chosen on the same data it is scored on
+always looks good. So I fit each strategy on one half of the sessions and score it
+on the other half, then bootstrap 1,000 times for 95% confidence intervals.
+
+**Step 4: first finding.** Against the 213-option menu, randomizing beats the best
+fixed defense in 96 of 400 settings. That looked exciting.
+
+**Step 5: the reality check.** Maybe randomizing only wins because the menu is too
+coarse, and some "in between" fixed defense would do just as well. So I built a
+much finer menu of **36,402** fixed defenses and computed the exact answer. Now
+randomizing wins by more than 0.002 bits in only **27 of 400** settings, by at
+most about **0.05 bits per trace**. An earlier, independent version of this code
+got almost the same answer (29 settings, max 0.051), which makes me trust it.
+
+![Where randomizing helps](software/results/figures/fig_B_supp_gap_pure_heatmap.png)
+
+*How much randomizing beats the best fixed defense (red = helps). It only shows up
+on the right side (separable bands, `s` of 0.5 or more) and at stronger leakage.
+At `s = 0` it is exactly zero everywhere.*
+
+## My conclusion
+
+- **Randomizing is real, but small and picky.** It helps in about 7% of settings,
+  and only by a few percent.
+- **It needs separable bands.** If every band reacts the same way to the
+  defense, one fixed defense is always best (I can prove this one: with only one
+  effective listening option, the math always picks a single fixed defense).
+- **A smarter listener probably erases it.** A listener that hears all bands at
+  once removes the band choice, so randomizing has nothing to hide behind.
+- **Honest takeaway:** game theory changed the answer only in a narrow corner.
+  That is still useful. It tells a designer when randomizing is worth the effort
+  and when a single well-tuned defense is enough.
+
+Everything above is simulation with made-up channel numbers. The next steps are
+adding the "hears everything" listener, making the game fairer to the listener's
+own costs, and measuring the band knob `s` on a real board I own.
+
+Full numbers, confidence intervals and all five figures:
 [`software/results/VALUE_OF_GAME_RESULTS.md`](software/results/VALUE_OF_GAME_RESULTS.md).
-Next steps: a fused/wideband observer type, a general-sum version of the game,
-and measuring band separability on real hardware.
+The math (model, proofs, open questions):
+[`theory/model-and-proof-roadmap.md`](theory/model-and-proof-roadmap.md).
+Related work: [`paper/related-work-nearest-table.md`](paper/related-work-nearest-table.md).
 
-## Architecture
+## How you can use this repo
 
-```text
-secret-dependent workload
-        |
-        v
-device + mixed-signal defense ---- energy / latency / alarm cost
-        |
-        +---- conducted power trace
-        +---- near-field EM trace
-                         |
-                         v
-adaptive observer: band + filter + trace allocation
-                         |
-                         v
- leakage metrics: TVLA, MI, guessing entropy, success probability
-```
+- **Learn game theory with real code.** `software/src/games.py` solves zero-sum
+  games, Bayesian games with several player types, and robust versions as linear
+  programs. Swap in your own payoff matrix (the impala game works too).
+- **Measure leakage.** `software/src/metrics.py` has TVLA (Welch t-test), binned
+  mutual information with bias correction, and exact Gaussian-mixture MI for
+  checking your estimator.
+- **Check a defense before building it.** Plug in your own defense options and
+  costs, run the sweep, and see whether randomizing is worth the energy before
+  you spend money on hardware.
+- **Copy the honest-evaluation recipe.** Cross-fitting, session bootstrap, exact
+  checks, and a finer baseline menu. They are the reason the headline went from
+  "96 wins" to "27 small wins", and they apply to any "does my fancy method beat
+  the simple one?" question.
 
-A second, parallel track supplies the data volume that the statistics require.
-Instead of hand-written synthetic traces, a small AES or synthetic switching
-kernel in Verilog/SystemVerilog is simulated (`iverilog`/Verilator), its
-per-cycle switching activity is extracted from VCD, and that activity is pushed
-through the same mixed-signal channel model to yield 10k to 1M labeled traces:
+## Run it yourself
 
-```text
-RTL kernel (+ clock gating, frequency hopping, dummy bank, LFSR/CSPRNG)
-        |
-        v
-iverilog / Verilator  ->  VCD / SAIF  ->  per-cycle switching activity Q[k]
-        |
-        +---- optional Yosys -> Sky130 gate-level netlist (glitch fidelity)
-        |
-        v
-mixed-signal channel model (PDN, pulse shape, RF mixing, noise)
-        |
-        v
-chunked dataset (Zarr traces + Parquet features) -> hierarchical statistics
-```
-
-Switching activity from simulation is a **proxy** for current demand, not a
-measurement of silicon EM leakage. It is calibrated against hardware only at the
-optional FPGA gate, and every claim derived from it is labeled accordingly. This
-track is planned and not built yet.
-
-## Stage gates
-
-The project runs in twelve stages (Stage 0 to Stage 11); the matching stage
-numbers are in parentheses.
-
-1. **Reproduction (Stages 0 to 2):** generate a trace model and reproduce
-   no-defense, fixed-noise, and random-frequency baselines.
-2. **Finite game (Stage 3):** solve and independently verify a zero-sum matrix
-   game.
-3. **Bayesian commitment (Stage 4):** add observer types and solve the
-   Stackelberg policy.
-4. **Theory (Stage 5):** prove only claims whose assumptions are explicit and
-   tested.
-5. **Trace replay (Stage 6):** evaluate on public or researcher-owned captures.
-6. **Bench validation (Stages 7 to 10):** proceed only if simulation predicts a
-   measurable effect.
-7. **Paper package (Stage 11):** freeze code, seeds, figures, proof status, and
-   limitations.
-
-Digital-circuit track (master plan Stage 2D), running in parallel from gate 1
-onward. Its phases are
-labeled R0 to R4 so they do not collide with the defender actions D0 to D3:
-
-- **R0 Toolchain and DUT:** RTL kernel simulates; per-cycle switching activity
-  reproduces a known ground-truth leakage model.
-- **R1 First 10k traces:** at least 10,000 traces over at least 30 independent
-  sessions, grouped splits, bootstrap/MI/hierarchical analysis, null
-  calibration passes.
-- **R2 Gate level:** Yosys/Sky130 netlist with timing; test whether the
-  behavioral ordering of defenses survives glitch-accurate simulation.
-- **R3 Scale to 100k and beyond:** demonstrate estimator convergence and produce a
-  payoff matrix whose per-cell intervals are narrow enough to separate actions.
-- **R4 FPGA calibration (optional, gated):** regress measured supply current
-  against simulated activity to quantify how good the proxy is.
-
-## Repository map
-
-- `theory/model-and-proof-roadmap.md`: notation, mathematical model, proved
-  results, and open proof targets.
-- `paper/related-work-nearest-table.md`: nearest prior work and positioning.
-- `software/`: reference simulator, tests, and the value-of-game study.
-- `software/results/VALUE_OF_GAME_RESULTS.md`: results of the confirmatory run.
-- `LICENSE`: MIT.
-
-## The tool
-
-The research is meant to produce a small, reusable tool, not only a paper.
-
-**What it does.** It evaluates adaptive mixed-signal side-channel defenses
-(clock gating, frequency hopping/DVFS, dummy switching, injected noise) against
-adaptive observers (band choice, filtering, trace budget). It takes a labeled
-trace dataset, estimates a payoff matrix of leakage plus overhead with
-confidence intervals, solves the defender/observer game, and reports the
-recommended randomized defense together with how stable that recommendation is.
-Datasets come first from large synthetic RTL/VCD simulations, and later from
-measured traces of hardware the user owns.
-
-**Who it is for.** Students learning side-channel evaluation, researchers
-comparing countermeasures, and hardware designers checking their own designs or
-devices they are authorized to test, before tape-out or before buying bench
-equipment.
-
-**What it does not do.** It does not attack third-party devices, recover keys
-from products, provide exploit or capture workflows for systems you do not own,
-increase RF range, or evade monitoring. Key-ranking metrics (guessing entropy,
-success rate) exist only to score defenses on synthetic keys. A low leakage score
-from this tool is not a security certification.
-
-**Input/output contract.**
-
-| | Contents |
-|---|---|
-| Input: dataset | `manifest.json` (version, seeds, tool versions, checksums), `traces.zarr` (N x T array), `features.parquet` (one row per trace: labels, defense/observer action, session/netlist/PVT/key groups, split) |
-| Input: config | JSON/YAML listing defenses, observers, estimator, cost weights, bootstrap count, stopping rule, master seed |
-| Output: results | JSON with payoff matrix and per-cell intervals, equilibrium value interval, mixed strategy with per-action support stability, primal-dual gap, solver status, N and G (sessions), full provenance |
-| Output: figures | regenerated from the results JSON only, never hand-edited |
-
-**Example.** Today the reference simulator runs as shown in the next section.
-The planned CLI (working name `ascam`) will look like:
-
-```powershell
-ascam generate --dut synth_kernel --traces 10000 --sessions 30 --seed 126 --out data/p1
-ascam evaluate --data data/p1 --config configs/d0-d3_a0-a3.yaml --out results/p1.json
-ascam report --results results/p1.json --out figures/p1
-```
-
-**Reproducibility expectations.** Same dataset version, config, master seed, and
-tool version must give bit-identical results JSON. Every result records N, G,
-estimator, interval method, number of tests, and the proxy caveat for simulated
-data. Splits are by key/session/netlist/PVT, never by random trace.
-
-**License.** MIT (see `LICENSE`). Third-party RTL cores and datasets keep their
-own licenses, which must be recorded in each dataset manifest.
-
-**Roadmap.** Reference simulator (now) -> RTL/VCD dataset generator with the
-documented schema -> `ascam` CLI plus importable Python library with stable
-schema -> example dataset, CITATION.cff, CI, and v1.0 release -> importer for
-measured traces from owned hardware.
-
-## Quick software start
-
-```powershell
+```bash
 cd software
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-python -m pytest
+python -m pytest                       # 25 tests, a few seconds
+python examples/tit_for_tat.py         # the impala game
 python -m src.run_experiment --seed 126 --output results/baseline.json
+python -m src.run_sweep --quick        # smoke test, seconds
+python -m src.run_sweep --seed 126     # full study, about 15 minutes on 4 cores
 ```
 
-The first simulator is intentionally small. It is a correctness scaffold, not
-evidence for publication. Publication-quality results require calibrated channel
-models, confidence intervals, adaptive baselines, and independent review.
+More detail is in [`software/README.md`](software/README.md) and
+[`software/RUN_VALUE_STUDY.md`](software/RUN_VALUE_STUDY.md).
 
-## Success criteria
+## What this is not
 
-A strong result must include all of the following:
+This is defensive research code. It does not attack third-party devices, recover
+keys from products, or help anyone eavesdrop. All secrets are synthetic, and a
+low leakage score from this code is not a security guarantee.
 
-- a game formulation that changes the selected defense relative to a
-  non-adaptive optimizer;
-- at least one proved equilibrium, convergence, or leakage result;
-- an adaptive-observer baseline;
-- statistically sound leakage and cost measurements;
-- a reproducible artifact and honest negative results;
-- a trace dataset large enough that the estimators used are not bias-dominated
-  (at least 10,000 traces to start, scaling to 100k and beyond), with the number
-  of independent sessions reported next to the number of traces;
-- defense overheads taken from synthesis timing/power reports rather than
-  assumed constants;
-- equilibrium results reported as distributions with support stability, not as
-  point estimates of an estimated payoff matrix.
-
-If the game adds no measurable value over robust convex optimization, that is a
-valid negative result and the framing should change rather than forcing a claim.
-
+License: MIT (see [`LICENSE`](LICENSE)).

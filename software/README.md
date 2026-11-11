@@ -25,7 +25,7 @@ The JSON result records the seed, configuration, dependency versions, payoff
 matrix, equilibrium (including its primal-dual gap), and pure-defense
 baselines. Run commands from this `software/` directory.
 
-`python -m src.run_sweep` is the value-of-game sweep (about an hour on 4
+`python -m src.run_sweep` is the value-of-game sweep (about 15 minutes on 4
 cores with B = 1000 bootstrap replicates; `--n-boot 200` is a faster check). It writes `results/value_of_game.json`, machine-generated tables in
 `results/value_of_game_tables.md`, and PNG figures in `results/figures/`.
 `python -m src.run_sweep --quick` runs a tiny smoke-test grid in seconds, and

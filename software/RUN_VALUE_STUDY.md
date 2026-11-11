@@ -42,7 +42,7 @@ python -m src.run_sweep --seed 126 --workers 4
 ```
 
 Pinning BLAS threads to 1 avoids oversubscription when several worker processes
-run. Runtime is roughly one hour on 4 cores (400 grid points, 1000
+run. Runtime is roughly 15 minutes on 4 cores (400 grid points, 1000
 session-bootstrap replicates each, plus the exact-model and fine-library
 phases). The bootstrap dominates; `--n-boot 200` gives a faster check.
 Use `--workers` to match your core count; results do not depend on it because
