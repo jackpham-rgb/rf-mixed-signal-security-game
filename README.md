@@ -162,6 +162,10 @@ Related work: [`paper/related-work-nearest-table.md`](paper/related-work-nearest
 
 ## How you can use this repo
 
+- **Try the tool.** `ascam` (in `software/`) makes a synthetic dataset,
+  solves the defender/eavesdropper game, and draws the figures in three
+  commands. See the "Command-line tool (ascam)" section of
+  [`software/README.md`](software/README.md).
 - **Learn game theory with real code.** `software/src/games.py` solves zero-sum
   games, Bayesian games with several player types, and robust versions as linear
   programs. Swap in your own payoff matrix (the impala game works too).
