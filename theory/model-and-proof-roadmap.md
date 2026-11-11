@@ -322,6 +322,26 @@ that a fused/wideband observer type (via P1) erases the value of mixing, would b
 a genuine contribution. This is the most promising original-theory lead and is
 currently a proof target, not a result.
 
+## 9b. Findings from the extension study (2026-11-11)
+
+See [`../software/results/EXTENSIONS_RESULTS.md`](../software/results/EXTENSIONS_RESULTS.md).
+
+- **Fused observer (numerical support for P1 and T6).** Adding a fifth observer
+  action that captures all four bands and sums their log-likelihood ratios cuts
+  the configs where mixing helps from 55 to 3 of 108 when that capture is cheap
+  (c_F = 0.05). As c_F rises the observer uses it less and the value of mixing
+  partly returns. Status of T6 is unchanged (proof target); this is evidence for
+  the corollary, not a proof of it.
+- **General-sum commitment (numerical).** With defender loss MI + overhead and
+  observer utility MI - c_a, the strong Stackelberg policy beats the zero-sum
+  policy (scored in the general-sum game) at 29 of 108 configs without a fused
+  observer and 25 of 108 with an expensive one, by up to 0.17 bits. Commitment
+  therefore changes the policy once costs are asymmetric, as the section above
+  predicted. Status: numerical observation.
+- **Robust commitment is required.** Induced best responses with a near-zero
+  margin often fail on held-out sessions. A theory target follows: commitment
+  against an estimated payoff matrix with an explicit margin (connects to T5).
+
 ## 10. Proof workflow
 
 For every candidate theorem:
