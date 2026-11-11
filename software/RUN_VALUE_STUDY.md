@@ -23,7 +23,7 @@ needed.
 python -m pytest
 ```
 
-Expected: all tests pass (38 at the time of writing, under a minute).
+Expected: all tests pass (42 at the time of writing, under a minute).
 
 ## 3. Smoke test of the sweep (seconds)
 

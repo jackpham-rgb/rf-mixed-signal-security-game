@@ -140,6 +140,38 @@ picked), so the result does not hinge on one implementation.
 on the right side (separable bands, `s` of 0.5 or more) and at stronger leakage.
 At `s = 0` it is exactly zero everywhere.*
 
+**Step 6: what if the listener hears everything?** The math predicts that a
+listener who captures all four bands at once (and combines them) leaves nothing
+to hide behind. I added that listener with its own capture cost. When it is cheap,
+randomizing helps in only **3 of 108** settings instead of 55. When the capture is
+expensive, the listener uses it less and some of the benefit comes back.
+
+![A cheap fused listener erases the benefit](software/results/figures/fig_E1_fused_observer.png)
+
+**Step 7: make the game fair to both sides.** In the first version, the device
+"won" whenever the listener paid for an expensive band, which is not realistic.
+Now each side counts only its own costs: the device pays energy and time, the
+listener pays for its equipment. In this version, committing to a strategy first
+(being a Stackelberg leader) actually matters. It beats the old policy in 29 of
+108 settings, and by up to 0.17 bits per trace when an expensive wideband capture
+exists. One catch: a strategy that only works by making the listener *barely*
+prefer one band falls apart on new data, so the commitment needs a safety margin.
+Details: [`software/results/EXTENSIONS_RESULTS.md`](software/results/EXTENSIONS_RESULTS.md).
+
+**Step 8: design a board to measure `s` for real.** Everything depends on the band
+knob `s`, so I designed a small test board (USB powered, about 23 USD in parts)
+with four dummy loads, each aimed at one listening band, plus a current shunt and
+a printed EM pickup loop. Its SPICE simulation caught a real design flaw first:
+switching the loads on and off at random dumped noise into the low band and
+dropped `s` to **0.17**. Adding a "balanced" twin load that keeps the average
+current constant brought it back to **0.78**, inside the range where randomizing
+can help. The schematic, simulation, parts list, 3D model, and measurement plan
+are in [`hardware/`](hardware/README.md).
+
+![How the board works](hardware/figures/how_it_works.gif)
+
+![3D concept model of the board](hardware/figures/board_3d.gif)
+
 ## My conclusion
 
 - **Randomizing is real, but small and picky.** It helps in about 7% of settings,
@@ -147,18 +179,29 @@ At `s = 0` it is exactly zero everywhere.*
 - **It needs separable bands.** If every band reacts the same way to the
   defense, one fixed defense is always best (I can prove this one: with only one
   effective listening option, the math always picks a single fixed defense).
-- **A smarter listener probably erases it.** A listener that hears all bands at
-  once removes the band choice, so randomizing has nothing to hide behind.
+- **A smarter listener erases it.** In simulation, a cheap listener that hears all
+  bands at once cuts the settings where randomizing helps from 55 to 3 of 108.
+  So the answer depends on what kind of eavesdropper you expect.
+- **Committing first matters once the game is fair.** When each side counts only
+  its own costs, a committed strategy beats the old one, but it needs a safety
+  margin to survive real (noisy) measurements.
+- **A real board can probably reach the needed separability.** The test board's
+  simulation says about 0.78 after one design fix, but only a measurement settles
+  it.
 - **Honest takeaway:** game theory changed the answer only in a narrow corner.
   That is still useful. It tells a designer when randomizing is worth the effort
   and when a single well-tuned defense is enough.
 
-Everything above is simulation with made-up channel numbers. The next steps are
-adding the "hears everything" listener, making the game fairer to the listener's
-own costs, and measuring the band knob `s` on a real board I own.
+Everything above is simulation with made-up channel numbers, and the board exists
+only as a design so far. The next steps are capturing the board in KiCad, building
+it, measuring `s` and the clock-hop coupling, and putting the measured numbers back
+into the simulator.
 
 Full numbers, confidence intervals and all five figures:
 [`software/results/VALUE_OF_GAME_RESULTS.md`](software/results/VALUE_OF_GAME_RESULTS.md).
+The fused listener and the fair (general-sum) game:
+[`software/results/EXTENSIONS_RESULTS.md`](software/results/EXTENSIONS_RESULTS.md).
+The test board: [`hardware/README.md`](hardware/README.md).
 The math (model, proofs, open questions):
 [`theory/model-and-proof-roadmap.md`](theory/model-and-proof-roadmap.md).
 Related work: [`paper/related-work-nearest-table.md`](paper/related-work-nearest-table.md).
@@ -178,6 +221,9 @@ Related work: [`paper/related-work-nearest-table.md`](paper/related-work-nearest
 - **Check a defense before building it.** Plug in your own defense options and
   costs, run the sweep, and see whether randomizing is worth the energy before
   you spend money on hardware.
+- **Reuse the board design.** The SPICE netlist (`hardware/spice/`) and the
+  share-matrix script show how to check whether a noise injector really stays in
+  its frequency band, before you build anything.
 - **Copy the honest-evaluation recipe.** Cross-fitting, session bootstrap, exact
   checks, and a finer baseline menu. They are the reason the headline went from
   "96 wins" to "27 small wins", and they apply to any "does my fancy method beat
@@ -188,11 +234,14 @@ Related work: [`paper/related-work-nearest-table.md`](paper/related-work-nearest
 ```bash
 cd software
 python -m pip install -r requirements.txt
-python -m pytest                       # 38 tests, under a minute
+python -m pytest                       # 42 tests, under a minute
 python examples/tit_for_tat.py         # the impala game
 python -m src.run_experiment --seed 126 --output results/baseline.json
 python -m src.run_sweep --quick        # smoke test, seconds
 python -m src.run_sweep --seed 126     # full study, about 15 minutes on 4 cores
+python -m src.run_extensions --seed 126  # fused listener + fair game, about 25 minutes
+cd ..
+python hardware/scripts/run_spice.py   # board simulation (needs ngspice)
 ```
 
 More detail is in [`software/README.md`](software/README.md) and

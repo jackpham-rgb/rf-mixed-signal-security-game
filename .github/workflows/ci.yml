@@ -23,6 +23,26 @@ jobs:
         run: python -m pytest
       - name: Smoke-test the sweep
         run: python -m src.run_sweep --quick --workers 2 --output results/quick/value_of_game.json --figures results/quick/figures --tables results/quick/tables.md
+      - name: Smoke-test the extension study
+        run: python -m src.run_extensions --quick --workers 2
+
+  hardware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install ngspice and Python packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ngspice
+          python -m pip install -r hardware/requirements.txt
+      - name: Simulate the board and redraw the hardware figures
+        run: |
+          python hardware/scripts/run_spice.py
+          python hardware/scripts/draw_schematic.py
+          python hardware/scripts/board_3d.py
 
   no-em-dashes:
     runs-on: ubuntu-latest
