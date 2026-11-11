@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+*.egg-info/
+build/
 
 # Personal planning, drafts, old-laptop material: local only, never public
 private/

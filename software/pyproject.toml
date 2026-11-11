@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ascam"
+dynamic = ["version"]
+description = "Research preview: evaluate synthetic mixed-signal side-channel defenses against adaptive observers"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Jack Pham" }]
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.11",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[project.scripts]
+ascam = "src.cli:main"
+
+[project.urls]
+Repository = "https://github.com/jackpham-rgb/rf-mixed-signal-security-game"
+
+# The import package is still named "src" so that "python -m src.cli" and the
+# other "python -m src...." commands keep working; renaming it is planned.
+[tool.setuptools]
+packages = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "src.__version__" }
