@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Personal planning stays local
+private/
+
+# Generated results and large data
+software/results/*
+!software/results/VALUE_OF_GAME_RESULTS.md
+!software/results/value_of_game_tables.md
+!software/results/figures/
+software/results/figures/*
+!software/results/figures/*.png
+!software/results/archive/
+data/
+*.zarr
+*.parquet
