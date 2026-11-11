@@ -44,10 +44,10 @@ class DefenderAction:
 
 
 OBSERVER_ACTIONS = (
-    ObserverAction("A0-conducted-low", gain=1.00, noise_sd=1.00, cost=0.00),
-    ObserverAction("A1-clock-fundamental-em", gain=1.30, noise_sd=1.10, cost=0.02),
-    ObserverAction("A2-harmonic-em", gain=0.80, noise_sd=0.80, cost=0.03),
-    ObserverAction("A3-adaptive-high-pass", gain=0.90, noise_sd=0.70, cost=0.05),
+    ObserverAction("A0-conducted-low", gain=0.75, noise_sd=0.85, cost=0.01),
+    ObserverAction("A1-clock-fundamental-em", gain=1.00, noise_sd=1.00, cost=0.03),
+    ObserverAction("A2-harmonic-em", gain=0.65, noise_sd=0.70, cost=0.02),
+    ObserverAction("A3-adaptive-high-pass", gain=1.18, noise_sd=0.78, cost=0.08),
 )
 
 DEFENDER_ACTIONS = (

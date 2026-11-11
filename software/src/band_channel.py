@@ -13,7 +13,7 @@ Per trace, the observer that committed to band b sees one scalar feature
   q_b(s) = (1 - s) * mean(t) + s * t_b, t = (0, 0.75, 0.75, 0); out of band it
   couples at kappa = 0.15.
 * Injection with power P and band allocation x (sum 1) has per-band variance
-  var_b(s) = 4 P ((1 - s) / 4 + s x_b).
+  var_b(s) = P ((1 - s) / 4 + s x_b), so the total over bands is P.
 
 At s = 0 hop and noise act identically on every band; at s = 1 they are fully
 band-targeted. The total effect (sum over bands) is the same at every s.
@@ -41,6 +41,8 @@ SESSION_GAIN_SD = 0.15
 SESSION_NOISE_SD = 0.10
 POWERS = (0.75, 1.5, 3.0)
 E_HOP, E_POWER, T_HOP = 0.13, 0.20, 0.18
+D1_ALLOC = (0.75, 0.25, 0.0, 0.0)   # v0.2.0: fixed dummy injects real noise
+D3_ALLOC = (0.5, 0.0, 0.0, 0.5)     # v0.2.0: hop plus conducted/high-pass noise
 
 
 @dataclass(frozen=True)
@@ -59,7 +61,7 @@ def hop_out_prob(s: float) -> np.ndarray:
 
 def inject_var(alloc, power: float, s: float) -> np.ndarray:
     x = np.asarray(alloc, dtype=float)
-    return 4.0 * power * ((1 - s) / N_BANDS + s * x) if power > 0 else np.zeros(N_BANDS)
+    return power * ((1 - s) / N_BANDS + s * x) if power > 0 else np.zeros(N_BANDS)
 
 
 def lattice(steps: int) -> list[tuple]:
@@ -89,14 +91,13 @@ def coarse_library() -> list[Row]:
     is a constant offset, so it does not change MI.
     """
     zero = (0.0,) * N_BANDS
-    uni = (0.25,) * N_BANDS
     rows = [
         Row("D0-no-defense", False, zero, 0.0, 0.0, 0.0),
-        Row("D1-fixed-dummy", False, zero, 0.0, E_POWER * 1.5, 0.0),
+        _row(False, D1_ALLOC, 1.5, "D1-fixed-dummy"),
         Row("D2-random-frequency", True, zero, 0.0, E_HOP, T_HOP),
-        _row(True, uni, 0.75, "D3-shaped-stochastic"),
+        _row(True, D3_ALLOC, 0.75, "D3-shaped-stochastic"),
     ]
-    dup = {("F", zero, 0.0), ("H", zero, 0.0), ("H", uni, 0.75)}
+    dup = {("F", zero, 0.0), ("H", zero, 0.0), ("F", D1_ALLOC, 1.5), ("H", D3_ALLOC, 0.75)}
     for hop in (False, True):
         cands = [(zero, 0.0)] + [(x, P) for x in lattice(4) for P in POWERS]
         for x, P in cands:
@@ -118,7 +119,7 @@ def fine_library(steps: int = 12, n_powers: int = 41, p_max: float = 3.0, s: flo
     for hop in (0, 1):
         hop_l.append(hop); var_l.append(np.zeros(N_BANDS)); e_l.append(E_HOP * hop); t_l.append(T_HOP * hop)
         for P in powers:
-            v = 4.0 * P * ((1 - s) / N_BANDS + s * allocs)
+            v = P * ((1 - s) / N_BANDS + s * allocs)
             hop_l += [hop] * len(v); var_l += list(v)
             e_l += [E_HOP * hop + E_POWER * P] * len(v); t_l += [T_HOP * hop] * len(v)
     hop_a, var_a = np.array(hop_l), np.array(var_l)

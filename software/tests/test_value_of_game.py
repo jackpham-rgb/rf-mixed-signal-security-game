@@ -13,15 +13,15 @@ def test_library_shape_and_names():
     rows = coarse_library()
     assert [r.name for r in rows[:4]] == ["D0-no-defense", "D1-fixed-dummy", "D2-random-frequency",
                                           "D3-shaped-stochastic"]
-    assert len({r.name for r in rows}) == len(rows) == 213
+    assert len({r.name for r in rows}) == len(rows) == 212
     assert any(r.name == "F-x0103-P0.75" for r in rows)
 
 
 def test_separability_preserves_total_effect():
     for s in (0.0, 0.3, 1.0):
         assert hop_out_prob(s).sum() == pytest.approx(1.5)
-        assert inject_var((0, 0.25, 0, 0.75), 1.5, s).sum() == pytest.approx(6.0)
-    assert np.allclose(inject_var((0, 0, 0, 1), 1.0, 0.0), 1.0)
+        assert inject_var((0, 0.25, 0, 0.75), 1.5, s).sum() == pytest.approx(1.5)
+    assert np.allclose(inject_var((0, 0, 0, 1), 1.0, 0.0), 0.25)
 
 
 def test_fine_library_counts():

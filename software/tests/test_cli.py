@@ -22,7 +22,7 @@ from src.metrics import mi_from_counts
 
 SOFTWARE = Path(__file__).resolve().parents[1]
 SMALL = ["--traces", "2400", "--sessions", "10", "--seed", "7"]
-FULL = ["--library", "full", "--traces", str(2 * 7 * 213), "--sessions", "7", "--seed", "9"]
+FULL = ["--library", "full", "--traces", str(2 * 7 * 212), "--sessions", "7", "--seed", "9"]
 NAMED = ["D0-no-defense", "D1-fixed-dummy", "D2-random-frequency", "D3-shaped-stochastic"]
 
 
@@ -41,11 +41,11 @@ def test_generate_evaluate_report_pipeline_and_module_entry_point(tmp_path):
                           "--bootstrap", "40", "--seed", "7", "--out", str(results)],
                          cwd=SOFTWARE, capture_output=True, text=True)
     assert run.returncode == 0, run.stderr
-    assert "Cross-fitted value-of-game check skipped" in run.stdout
+    assert "Cross-fitted gap_pure" in run.stdout   # v0.2.0 D1 injects noise, so the check runs
     assert main(["report", "--results", str(results), "--out", str(figures)]) == 0
     assert {p.name for p in data.iterdir()} == {"manifest.json", "traces.npz", "features.npz"}
     assert {p.name for p in figures.iterdir()} == {"payoff_equilibrium.png",
-                                                   "equilibrium_uncertainty.png"}
+        "equilibrium_uncertainty.png", "value_of_game.png"}
     for path in figures.iterdir():
         assert path.stat().st_size > 10_000
 
@@ -71,19 +71,19 @@ def test_generate_evaluate_report_pipeline_and_module_entry_point(tmp_path):
     assert {"ascam", "python", "numpy", "scipy"} <= parsed["provenance"]["versions"].keys()
     assert parsed["data"]["dataset_id"].startswith("sha256:")
     assert parsed["caveat"].startswith("synthetic: parametric")
-    # The named library has no noise-only row, so baseline B3 and the check cannot run.
-    assert "B3" in parsed["value_of_game"]["skipped"]
+    # v0.2.0 physics: D1 injects noise, so B3 exists and the check runs.
+    assert "skipped" not in parsed["value_of_game"]
 
 
 def test_full_library_runs_the_cross_fitted_check_and_draws_its_figure(tmp_path):
     data = tmp_path / "full"
     assert main(["generate", *FULL, "--out", str(data)]) == 0
     names = [d["name"] for d in load(data / "manifest.json")["defense_actions"]]
-    assert len(names) == 213 and names[:4] == NAMED
+    assert len(names) == 212 and names[:4] == NAMED
     assert main(["evaluate", "--data", str(data), "--bins", "4", "--bootstrap", "10",
                  "--out", str(tmp_path / "full.json")]) == 0
     result = load(tmp_path / "full.json")
-    assert np.asarray(result["payoff"]["matrix"]).shape == (213, 4)
+    assert np.asarray(result["payoff"]["matrix"]).shape == (212, 4)
     assert abs(result["equilibrium"]["duality_gap"]) < 1e-8
     vog = result["value_of_game"]
     assert set(METHODS) <= vog["methods"].keys()
@@ -111,7 +111,7 @@ def test_mi_estimates_recover_the_exact_band_channel():
                                      inject_var(row.alloc, row.power, 1.0)[b],
                                      edges=cells.edges[d, b]) for b in range(4)]
                       for d, row in enumerate(coarse_library()[:4])])
-    assert exact[3].max() < exact[0].min()
+    assert np.all(exact[3] < exact[0])   # D3 leaks less than D0 in every band
     assert np.abs(estimate - exact).max() < 0.015
 
 
