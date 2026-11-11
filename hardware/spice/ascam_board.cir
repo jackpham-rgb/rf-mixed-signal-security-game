@@ -1,0 +1,75 @@
+* ASCAM-1 leakage test board: supply path, current shunt, MCU current, 4 dummy-load branches
+* Plain SPICE (opens in LTspice and ngspice). Times in s, values in SI units.
+* Parameters are overridden by hardware/scripts/run_spice.py for each case.
+.param fclk=32meg
+.param en0=0 en1=0 en2=0 en3=0
+.param bal=1   ; 1 = balanced loads (rev 2), 0 = plain loads (rev 1)
+.param secret=1
+
+* ---- USB 5 V -> LDO (AP2112K-3.3 modeled as 3.3 V source, Rout, output cap) ----
+VLDO vldo 0 3.3
+RLDO vldo n_ldo 0.05
+CLDO n_ldo n_cldo 10u
+RCLDO n_cldo 0 0.01
+
+* ---- Current-sense shunt (conducted measurement, SMA J1) ----
+RSH n_ldo n_sh 1
+LTR n_sh vdut 5n
+
+* ---- Local decoupling at the MCU; its loop current is what a near-field probe sees ----
+CBULK vdut nb1 4.7u
+RBULK nb1 nb2 0.02
+LBULK nb2 0 1n
+CDEC vdut nd1 200n
+LDEC nd1 nloop 0.6n
+VLOOP nloop 0 0
+
+* ---- MCU core current: clock-rate pulses plus a round-rate envelope (synthetic AES) ----
+IMCU vdut 0 PULSE(0 {20m + 4m*secret} 0 1n 1n {0.25/fclk} {1/fclk})
+IENV vdut 0 PULSE(0 {3m + 1m*secret} 0 20n 20n 1u 2u)
+
+* ---- Dummy-load branches (enable = 0 or 1) ----
+* B0 target, conducted-low: 250 kHz, slow 200 ns edges, MOSFET + 100 ohm
+VC0 c0 0 PULSE(0 {3.3*en0} 0 200n 200n 1.8u 4u)
+S0 vdut b0 g0 0 SWM
+R0 b0 0 100
+* B3 target, 2-20 MHz: 6 MHz, 10 ns edges, MOSFET + 100 ohm
+VC3 c3 0 PULSE(0 {3.3*en3} 0 10n 10n 73n 166.7n)
+S3 vdut b3 g3 0 SWM
+R3 b3 0 100
+* B1 target, clock band: gated copy of the clock (74LVC1G08), 150 ohm load
+VC1 c1 0 PULSE(0 {3.3*en1} 0 1n 1n {0.5/fclk - 1n} {1/fclk})
+S1 vdut b1 g1 0 SWM
+R1 b1 0 150
+* B2 target, 2x clock band: XOR doubler output (74LVC1G86 + RC delay), 150 ohm load
+VC2 c2 0 PULSE(0 {3.3*en2} 0 0.7n 0.7n {0.25/fclk - 0.7n} {0.5/fclk})
+S2 vdut b2 g2 0 SWM
+R2 b2 0 150
+
+* ---- Random gating (LFSR in firmware). Static here: always on when enabled.
+* run_spice.py swaps these DC sources for PWL bit sequences in the "random" case.
+VR0 r0 0 3.3
+VR1 r1 0 3.3
+VR2 r2 0 3.3
+VR3 r3 0 3.3
+BG0 g0 0 V=V(c0)*V(r0)/3.3
+BG1 g1 0 V=V(c1)*V(r1)/3.3
+BG2 g2 0 V=V(c2)*V(r2)/3.3
+BG3 g3 0 V=V(c3)*V(r3)/3.3
+
+* ---- Rev 2: balanced loads. When an HF branch is gated off, a complementary resistor
+* (inverted LFSR bit, 74LVC1G04) draws the same average current, so gating does not
+* step the supply current. Each HF carrier has about 50% duty, so Rcomp ~ 2 x R.
+BGC1 gc1 0 V={en1*bal}*(3.3-V(r1))
+SC1 vdut bc1 gc1 0 SWM
+RC1 bc1 0 302
+BGC2 gc2 0 V={en2*bal}*(3.3-V(r2))
+SC2 vdut bc2 gc2 0 SWM
+RC2 bc2 0 302
+BGC3 gc3 0 V={en3*bal}*(3.3-V(r3))
+SC3 vdut bc3 gc3 0 SWM
+RC3 bc3 0 205
+
+.model SWM SW(Ron=2 Roff=10meg Vt=1.65 Vh=0)
+.tran 0.5n 100u 0 0.5n
+.end

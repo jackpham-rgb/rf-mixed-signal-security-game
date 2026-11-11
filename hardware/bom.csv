@@ -1,0 +1,27 @@
+ref,qty,part,package,value / notes,approx unit cost (USD)
+U2,1,STM32G431CBU6,UFQFPN-48,"Cortex-M4 170 MHz; PLL lets firmware hop the clock (24 / 32 MHz); MCO output on PA8",5.50
+U1,1,AP2112K-3.3TRG1,SOT-23-5,"3.3 V LDO, 600 mA",0.40
+Y1,1,8 MHz crystal,3225,"HSE reference for the PLL",0.30
+C10-C11,2,capacitor,0402 C0G,"10 pF crystal load caps (check crystal datasheet)",0.02
+R_SH,1,current-sense resistor,1206,"1 ohm 0.1% thin film (e.g. Susumu RG3216 series), Kelvin pads",0.60
+C1,1,capacitor,0603 X7R,1 uF LDO input,0.02
+C2,1,capacitor,0805 X7R,10 uF LDO output,0.05
+C3,1,capacitor,0402 X7R,100 nF AC coupling to J1,0.02
+C4-C7,4,capacitor,0402 X7R,"100 nF, one per VDD pin",0.02
+C8,1,capacitor,0603 X7R,4.7 uF bulk at MCU,0.03
+C9,1,capacitor,0402 C0G,3.3 pF delay cap for the XOR doubler,0.02
+U3 + branch gates,5,74LVC1G08,SOT-353,"AND: clock gate for branch 1, and DRV AND EN in each branch",0.15
+U4,1,74LVC1G86,SOT-353,XOR frequency doubler for branch 2,0.15
+branch inverters,3,74LVC1G04,SOT-353,"NOT(EN) drives the complementary load in branches 1-3",0.12
+Q1-Q7,7,DMG2302U,SOT-23,"N-MOSFET, low gate charge; 4 main + 3 complementary",0.10
+R_LOAD0 R_LOAD3,2,resistor,1206 0.25 W,100 ohm,0.02
+R_LOAD1 R_LOAD2,2,resistor,1206 0.25 W,150 ohm,0.02
+R_COMP1 R_COMP2,2,resistor,1206 0.25 W,301 ohm,0.02
+R_COMP3,1,resistor,1206 0.25 W,200 ohm,0.02
+R7,1,resistor,0402,49.9 ohm trigger series termination,0.01
+R8,1,resistor,0402,100 ohm XOR doubler delay,0.01
+R9-R10,2,resistor,0402,"5.1 k USB-C CC pull-downs (5 V sink)",0.01
+J1-J3,3,SMA edge-launch jack,edge mount 1.6 mm,"J1 conducted, J2 trigger, J3 EM loop",3.00
+J5,1,USB-C receptacle (power only),GCT USB4105,"5 V input",0.70
+J4,1,Tag-Connect TC2030 footprint,pads only,"SWD programming, no part to buy",0.00
+PCB,1,4-layer PCB,70 x 45 mm 1.6 mm,"layer 2 solid ground; about 10-30 USD for 5 boards at common fabs",4.00
