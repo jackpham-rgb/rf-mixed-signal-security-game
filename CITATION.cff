@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it."
+title: "Game Theory in a Circuit: Adaptive Spectral Camouflage for Mixed-Signal Side Channels"
+abstract: >-
+  A reproducible simulator and command-line tool (ascam) that tests whether a
+  device can randomize its clock hopping and dummy noise so an adaptive
+  eavesdropper learns less, without spending too much energy. Defensive
+  research code: all secrets are synthetic.
+type: software
+authors:
+  - family-names: Pham
+    given-names: Jack
+version: 0.3.0
+license: MIT
+repository-code: "https://github.com/jackpham-rgb/rf-mixed-signal-security-game"
+keywords:
+  - side-channel
+  - hardware-security
+  - game-theory
+  - mixed-signal
+  - mutual-information
+  - reproducible-research
