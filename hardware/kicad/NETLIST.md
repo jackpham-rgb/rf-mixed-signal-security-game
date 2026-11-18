@@ -36,6 +36,7 @@ official KiCad symbol libraries and are checked against each footprint's pads.
 | J3 | SMA EM loop | `SMA_Amphenol_132289_EdgeMount` | EM bands B1 B2 B3 |
 | J4 | SWD | `Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical` | pads only, no part to buy |
 | J5 | USB-C power | `USB_C_Receptacle_GCT_USB4125-xx-x_6P_TopMnt_Horizontal` | 5 V sink, power only |
+| J6 | UART | `PinHeader_1x03_P2.54mm_Vertical` | UART to a 3.3 V USB-serial adapter: 1 GND, 2 board TX, 3 board RX |
 | Q1 | DMG2302U | `SOT-23` | branch 0 main switch |
 | Q2 | DMG2302U | `SOT-23` | branch 1 main switch |
 | Q3 | DMG2302U | `SOT-23` | branch 2 main switch |
@@ -61,7 +62,7 @@ official KiCad symbol libraries and are checked against each footprint's pads.
 | TP3 | SHUNT_HI | `TestPoint_Pad_D1.0mm` | Kelvin sense, shunt high |
 | TP4 | SHUNT_LO | `TestPoint_Pad_D1.0mm` | Kelvin sense, shunt low |
 | U1 | AP2112K-3.3 | `SOT-23-5` | 3.3 V LDO |
-| U2 | STM32G431CBU6 | `QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm` | PA6 = TIM3_CH1, PB0 = TIM3_CH3, PA8 = MCO, PG10 = NRST, PB8 = BOOT0 |
+| U2 | STM32G431CBU6 | `QFN-48-1EP_7x7mm_P0.5mm_EP5.6x5.6mm` | PA6 = TIM16_CH1, PB0 = TIM3_CH3, PA8 = MCO, PA2/PA3 = USART2, PG10 = NRST, PB8 = BOOT0 |
 | U3 | 74LVC1G08 | `SOT-353_SC-70-5` | branch 1 (B1 clock): carrier AND random enable |
 | U4 | 74LVC1G86 | `SOT-353_SC-70-5` | XOR doubler |
 | U5 | 74LVC1G08 | `SOT-353_SC-70-5` | branch 0 (B0 conducted): carrier AND random enable |
@@ -79,7 +80,7 @@ official KiCad symbol libraries and are checked against each footprint's pads.
 | +5V | C1.1, J5.A9, J5.B9, U1.1, U1.3 |
 | 3V3_DUT | C13.1, C14.1, C15.1, C16.1, C17.1, C18.1, C19.1, C20.1, C3.1, C4.1, C5.1, C6.1, C7.1, C8.1, J4.1, R1.2, R12.1, R13.1, R14.1, R15.1, R16.1, R17.1, R18.1, TP4.1, U10.5, U2.1, U2.20, U2.21, U2.23, U2.35, U2.48, U3.5, U4.5, U5.5, U6.5, U7.5, U8.5, U9.5 |
 | 3V3_SRC | C2.1, R1.1, TP3.1, U1.5 |
-| GND | C1.2, C10.2, C11.2, C12.2, C13.2, C14.2, C15.2, C16.2, C17.2, C18.2, C19.2, C2.2, C20.2, C4.2, C5.2, C6.2, C7.2, C8.2, C9.2, J1.2, J2.2, J3.2, J4.5, J5.A12, J5.B12, J5.S1, Q1.2, Q2.2, Q3.2, Q4.2, Q5.2, Q6.2, Q7.2, R10.2, R11.2, R9.2, TP2.1, U1.2, U10.3, U2.49, U3.3, U4.3, U5.3, U6.3, U7.3, U8.3, U9.3, Y1.2, Y1.4 |
+| GND | C1.2, C10.2, C11.2, C12.2, C13.2, C14.2, C15.2, C16.2, C17.2, C18.2, C19.2, C2.2, C20.2, C4.2, C5.2, C6.2, C7.2, C8.2, C9.2, J1.2, J2.2, J3.2, J4.5, J5.A12, J5.B12, J5.S1, J6.1, Q1.2, Q2.2, Q3.2, Q4.2, Q5.2, Q6.2, Q7.2, R10.2, R11.2, R9.2, TP2.1, U1.2, U10.3, U2.49, U3.3, U4.3, U5.3, U6.3, U7.3, U8.3, U9.3, Y1.2, Y1.4 |
 | BOOT0 | R11.1, U2.46 |
 | CC1 | J5.A5, R9.1 |
 | CC2 | J5.B5, R10.1 |
@@ -116,3 +117,5 @@ official KiCad symbol libraries and are checked against each footprint's pads.
 | SWDIO | J4.2, U2.36 |
 | SWO | J4.6, U2.41 |
 | TRIG | R7.1, U2.8 |
+| UART_RX | J6.3, U2.11 |
+| UART_TX | J6.2, U2.10 |

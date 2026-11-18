@@ -83,7 +83,8 @@ def sheet_mcu(d):
                               elm.IcPin("OSC_OUT", side="left"), elm.IcPin("SWD", side="left"),
                               elm.IcPin("PA8", side="right"), elm.IcPin("PA6", side="right"),
                               elm.IcPin("PB0", side="right"), elm.IcPin("PB4-7", side="right"),
-                              elm.IcPin("PA0", side="right"), elm.IcPin("VSS", side="bottom")],
+                              elm.IcPin("PA0", side="right"), elm.IcPin("PA2-3", side="right"),
+                              elm.IcPin("VSS", side="bottom")],
                        edgepadW=5.0, edgepadH=0.6, pinspacing=1.4).at((0, 0)))
     d += elm.Label().at((ctr(mcu)[0] + 0.2, ctr(mcu)[1] + 0.5)).label("U2 STM32G431", fontsize=11)
     d += elm.Label().at((ctr(mcu)[0] + 0.2, ctr(mcu)[1] - 0.5)).label("synthetic AES, PLL hop 24 / 32 MHz", fontsize=8)
@@ -107,8 +108,8 @@ def sheet_mcu(d):
     d += elm.Line().at(mcu.VSS).down(0.5)
     d += elm.Ground()
     # Plain outputs
-    for pin, txt in (("PA0", "TRIG to J2"), ("PB4-7", "EN0-EN3: LFSR random gating"),
-                     ("PB0", "DRV3: TIM3 6 MHz PWM"), ("PA6", "DRV0: TIM3 250 kHz, slow edges")):
+    for pin, txt in (("PA2-3", "USART2 TX/RX to J6 (UART header)"), ("PA0", "TRIG to J2"), ("PB4-7", "EN0-EN3: LFSR random gating"),
+                     ("PB0", "DRV3: TIM3 6 MHz PWM"), ("PA6", "DRV0: TIM16 250 kHz, slow edges")):
         d += elm.Line().at(mcu[pin]).right(1.0)
         d += elm.Dot(open=True).label(txt, loc="right")
     # MCO -> AND gate (branch 1) and XOR doubler (branch 2)

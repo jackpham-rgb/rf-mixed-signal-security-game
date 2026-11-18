@@ -96,8 +96,10 @@ Equipment: an oscilloscope with at least 200 MHz bandwidth and FFT (or an SDR th
 covers 20 kHz to 70 MHz), SMA cables, a DC block for J1, optionally a 20 dB LNA.
 No hand-held probe is needed because the EM loop is on the board.
 
-1. Flash firmware that runs synthetic AES with a GPIO trigger on J2, a fixed
-   random key, and commands to enable each branch and the clock hop.
+1. Flash the firmware in [`../firmware/`](../firmware/README.md). It runs
+   synthetic AES with a trigger on J2 and takes serial commands (UART header J6)
+   to set the clock hop and each branch. Every step below has a ready plan in
+   `firmware/host/plans/`, run with `firmware/host/ascam_ctl.py`.
 2. Leakage per band: capture traces with secret bit 0 and 1 (no loads), take the
    power of the mean difference in each band, from J1 for B0 and J3 for B1 to B3.
 3. Injection per band: enable one branch at a time with random gating on, and
@@ -113,7 +115,7 @@ USB-powered, emits only through its own SMA ports, and has no intentional radiat
 
 ## Feasibility
 
-- **Cost:** about 23 USD in parts per board (`bom.csv`, 64 parts) plus about 10 to 30 USD for
+- **Cost:** about 23 USD in parts per board (`bom.csv`, 65 parts) plus about 10 to 30 USD for
   five 4-layer boards at common PCB fabs.
 - **Assembly:** all parts are standard SMD (smallest 0402 and UFQFPN-48). Hand
   assembly with a stencil and hot plate is realistic; fab assembly is easier.
@@ -134,7 +136,7 @@ USB-powered, emits only through its own SMA ports, and has no intentional radiat
 | `scripts/board_3d.py` | 3D concept model, top view, rotating GIF, STL export |
 | `cad/ascam1_board.stl` | 3D model for any STL viewer (mm) |
 | `scripts/how_it_works_gif.py` | The explainer animation at the top (stylized, not data) |
-| `kicad/ascam1.net` | KiCad netlist (64 parts, 40 nets), import into the PCB editor |
+| `kicad/ascam1.net` | KiCad netlist (65 parts, 42 nets), import into the PCB editor |
 | `kicad/make_netlist.py` | Generates the netlist, `kicad/NETLIST.md`, and `bom.csv` from one parts table, checking every pin against the official KiCad libraries |
 | `kicad/README.md` | Step-by-step KiCad 10 guide: import, stackup, placement, layout rules |
 | `bom.csv` | Parts list with footprints and rough prices (generated) |

@@ -33,7 +33,7 @@ SMA = "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
 TP = "TestPoint:TestPoint_Pad_D1.0mm"
 
 # Rough unit prices (USD) for the BOM; check a distributor before ordering.
-PRICE = {"STM32G431CBU6": 5.50, "AP2112K-3.3TRG1": 0.40, "8 MHz": 0.30, "DMG2302U": 0.10,
+PRICE = {"UART": 0.10, "STM32G431CBU6": 5.50, "AP2112K-3.3TRG1": 0.40, "8 MHz": 0.30, "DMG2302U": 0.10,
          "74LVC1G08": 0.15, "74LVC1G86": 0.15, "74LVC1G04": 0.12, "SMA": 3.00, "USB-C": 0.60,
          "1R 0.1%": 0.60}
 
@@ -83,8 +83,12 @@ def parts():
               "PF0": "OSC_IN", "PF1": "OSC_OUT", "PG10": "NRST", "PB8": "BOOT0",
               "PA13": "SWDIO", "PA14": "SWCLK", "PB3": "SWO",
               "PA0": "TRIG", "PA6": "DRV0", "PB0": "DRV3", "PA8": "MCO",
-              "PB4": "EN0", "PB5": "EN1", "PB6": "EN2", "PB7": "EN3"},
-             "PA6 = TIM3_CH1, PB0 = TIM3_CH3, PA8 = MCO, PG10 = NRST, PB8 = BOOT0", "STM32G431CBU6"),
+              "PB4": "EN0", "PB5": "EN1", "PB6": "EN2", "PB7": "EN3",
+              "PA2": "UART_TX", "PA3": "UART_RX"},
+             "PA6 = TIM16_CH1, PB0 = TIM3_CH3, PA8 = MCO, PA2/PA3 = USART2, PG10 = NRST, PB8 = BOOT0", "STM32G431CBU6"),
+        part("J6", "Connector_Generic", "Conn_01x03", "UART", "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical",
+             {"1": "GND", "2": "UART_TX", "3": "UART_RX"},
+             "UART to a 3.3 V USB-serial adapter: 1 GND, 2 board TX, 3 board RX"),
         part("Y1", "Device", "Crystal_GND24", "8 MHz", "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
              {"1": "OSC_IN", "3": "OSC_OUT", "2": "GND", "4": "GND"}, "HSE, PLL reference"),
         C("C10", "10p", "OSC_IN", "GND", note="crystal load, check crystal datasheet"),
