@@ -1,0 +1,38 @@
+{
+  "description": "Example mixed policy: weights are the game's probabilities x 100. Replace them with the policy the solver gives for your measured s.",
+  "seed": 126,
+  "keys": [
+    "000102030405060708090a0b0c0d0e0f",
+    "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+  ],
+  "traces": 10000,
+  "gate_us": 256,
+  "lead_us": 8,
+  "gap_us": 1000,
+  "defenses": [
+    {
+      "name": "no defense",
+      "clock_mhz": 32,
+      "loads": "0000",
+      "weight": 14
+    },
+    {
+      "name": "noise B1+B3",
+      "clock_mhz": 32,
+      "loads": "0R0R",
+      "weight": 45
+    },
+    {
+      "name": "noise B3",
+      "clock_mhz": 32,
+      "loads": "000R",
+      "weight": 34
+    },
+    {
+      "name": "hop + noise B2",
+      "clock_mhz": 24,
+      "loads": "00R0",
+      "weight": 7
+    }
+  ]
+}

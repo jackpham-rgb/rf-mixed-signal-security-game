@@ -1,0 +1,26 @@
+{
+  "description": "Step 3: injection of branch 1 (B1 clock). Off vs random-gated, interleaved.",
+  "seed": 126,
+  "keys": [
+    "000102030405060708090a0b0c0d0e0f",
+    "f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff"
+  ],
+  "traces": 10000,
+  "gate_us": 256,
+  "lead_us": 8,
+  "gap_us": 1000,
+  "defenses": [
+    {
+      "name": "all off",
+      "clock_mhz": 32,
+      "loads": "0000",
+      "weight": 1
+    },
+    {
+      "name": "branch 1 random",
+      "clock_mhz": 32,
+      "loads": "0R00",
+      "weight": 1
+    }
+  ]
+}
