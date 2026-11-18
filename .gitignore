@@ -20,5 +20,6 @@ software/results/*
 software/results/figures/*
 !software/results/figures/*.png
 data/
+firmware/build/
 *.zarr
 *.parquet

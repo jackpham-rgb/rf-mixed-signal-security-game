@@ -166,7 +166,9 @@ switching the loads on and off at random dumped noise into the low band and
 dropped `s` to **0.17**. Adding a "balanced" twin load that keeps the average
 current constant brought it back to **0.78**, inside the range where randomizing
 can help. The schematic, simulation, parts list, 3D model, and measurement plan
-are in [`hardware/`](hardware/README.md).
+are in [`hardware/`](hardware/README.md), and the board's firmware (synthetic AES,
+clock hop, DMA-driven random gating, and a PC script that labels every trace) is
+in [`firmware/`](firmware/README.md). Neither has touched real hardware yet.
 
 ![How the board works](hardware/figures/how_it_works.gif)
 

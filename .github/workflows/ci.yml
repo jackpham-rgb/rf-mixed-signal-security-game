@@ -26,6 +26,26 @@ jobs:
       - name: Smoke-test the extension study
         run: python -m src.run_extensions --quick --workers 2
 
+  firmware:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firmware
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install the ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi
+          python -m pip install pytest
+      - name: Host tests, simulator, and the STM32 build
+        run: make test sim fw
+      - name: Control script against the simulator
+        run: python -m pytest host
+
   hardware:
     runs-on: ubuntu-latest
     steps:
